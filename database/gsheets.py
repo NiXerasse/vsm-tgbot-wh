@@ -10,11 +10,11 @@ from logger.logger import logger
 import asyncio
 
 from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('vsmtgbot.json', scope)
+creds = service_account.Credentials.from_service_account_file('vsmtgbot.json', scopes=scope)
 drive_service = build('drive', 'v3', credentials=creds)
 sheets_service = build('sheets', 'v4', credentials=creds)
 client = gspread.authorize(creds)

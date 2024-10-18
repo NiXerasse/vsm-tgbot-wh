@@ -2,13 +2,27 @@ import asyncio
 
 from database.gsheets import read_google_sheets_data_async, update_google_sheets_data_async
 from database.orm import update_db
+
 from logger.logger import logger
 
 async def sync_db_and_gsheets():
     logger.info('Starting update task')
-    data = await read_google_sheets_data_async()
+    try:
+        data = await read_google_sheets_data_async()
+    except asyncio.CancelledError:
+        raise
+    except:
+        logger.warning('Error reading google sheets')
+        return
+
     await update_db(data)
-    await update_google_sheets_data_async()
+    try:
+        await update_google_sheets_data_async()
+    except asyncio.CancelledError:
+        raise
+    except:
+        logger.warning('Error updating google sheets')
+        return
     logger.info('Finished update task')
 
 async def sync_db_and_gsheets_loop(interval: int):
