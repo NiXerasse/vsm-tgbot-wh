@@ -1,3 +1,5 @@
-.myenv
+.venv
 .env
 .idea
+vsmtgbot.json
+app.log

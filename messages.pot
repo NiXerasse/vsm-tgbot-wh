@@ -1,0 +1,154 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-10-18 15:52+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: handlers/employee.py:29 handlers/employee.py:56 handlers/start.py:227
+msgid "Welcome"
+msgstr ""
+
+#: handlers/employee.py:78
+msgid "Data for"
+msgstr ""
+
+#: handlers/employee.py:80
+msgid "Number of days worked"
+msgstr ""
+
+#: handlers/employee.py:81
+msgid "Average number of hours"
+msgstr ""
+
+#: handlers/employee.py:82
+msgid "Accounted hours"
+msgstr ""
+
+#: handlers/start.py:46
+msgid "Enter your personal PIN"
+msgstr ""
+
+#: handlers/start.py:52
+msgid "Choose your language"
+msgstr ""
+
+#: handlers/start.py:81 handlers/start.py:128
+msgid "Now you need to enter new password for your account"
+msgstr ""
+
+#: handlers/start.py:92
+msgid "You entered a wrong PIN"
+msgstr ""
+
+#: handlers/start.py:93
+msgid "Please contact your supervisor to get correct PIN"
+msgstr ""
+
+#: handlers/start.py:102
+msgid "You've already set your password"
+msgstr ""
+
+#: handlers/start.py:103
+msgid "Please log in by your username"
+msgstr ""
+
+#: handlers/start.py:111
+msgid "Hello"
+msgstr ""
+
+#: handlers/start.py:113
+msgid "Your service number"
+msgstr ""
+
+#: handlers/start.py:114
+msgid ""
+"This is your username, which you will use to log into your personal "
+"account."
+msgstr ""
+
+#: handlers/start.py:115
+msgid "I will keep it below this message"
+msgstr ""
+
+#: handlers/start.py:135 handlers/start.py:169
+msgid "Please enter your username"
+msgstr ""
+
+#: handlers/start.py:144
+msgid "Your password"
+msgstr ""
+
+#: handlers/start.py:158
+msgid "Data saved successfully"
+msgstr ""
+
+#: handlers/start.py:159
+msgid "You can now login by username"
+msgstr ""
+
+#: handlers/start.py:179 handlers/start.py:204
+msgid "Please enter your password"
+msgstr ""
+
+#: handlers/start.py:194
+msgid "You've entered wrong username"
+msgstr ""
+
+#: handlers/start.py:195 handlers/start.py:220
+msgid "Please try again"
+msgstr ""
+
+#: handlers/start.py:203
+msgid "Username"
+msgstr ""
+
+#: handlers/start.py:219
+msgid "You've entered wrong password"
+msgstr ""
+
+#: keyboards/inline.py:12
+msgid "Login by PIN"
+msgstr ""
+
+#: keyboards/inline.py:13
+msgid "Login by username"
+msgstr ""
+
+#: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
+#: keyboards/inline.py:42 keyboards/inline.py:53
+msgid "Back"
+msgstr ""
+
+#: keyboards/inline.py:29
+msgid "Got it"
+msgstr ""
+
+#: keyboards/inline.py:35
+msgid "Save"
+msgstr ""
+
+#: keyboards/inline.py:41
+msgid "Change username"
+msgstr ""
+
+#: keyboards/inline.py:47
+msgid "Get worked hours info"
+msgstr ""
+
+#: keyboards/inline.py:48
+msgid "Log out of your account"
+msgstr ""
+
