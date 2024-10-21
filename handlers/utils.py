@@ -2,7 +2,7 @@ import os
 
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InputMediaPhoto, ReplyKeyboardRemove
+from aiogram.types import Message, InputMediaPhoto, ReplyKeyboardRemove, CallbackQuery
 from aiogram import types
 
 from logger.logger import logger
@@ -24,3 +24,12 @@ async def update_start_message(message: Message, state: FSMContext, caption: str
         )
     except TelegramBadRequest:
         logger.warning('Trying to edit message while setting the same content')
+
+def update_callback_query_data(callback_query: CallbackQuery, data: str):
+    return CallbackQuery(
+        id=callback_query.id,
+        from_user=callback_query.from_user,
+        message=callback_query.message,
+        chat_instance=callback_query.chat_instance,
+        data=data
+    )

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-18 15:52+0300\n"
+"POT-Creation-Date: 2024-10-21 23:50+0300\n"
 "PO-Revision-Date: 2024-10-16 17:52+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,25 +19,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: handlers/employee.py:29 handlers/employee.py:56 handlers/start.py:227
+#: handlers/employee.py:30 handlers/start.py:227
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
-#: handlers/employee.py:78
+#: handlers/employee.py:98
 msgid "Data for"
 msgstr "Данные за"
 
-#: handlers/employee.py:80
+#: handlers/employee.py:105
 msgid "Number of days worked"
 msgstr "Количество отработанных дней"
 
-#: handlers/employee.py:81
-msgid "Average number of hours"
-msgstr "Среднее количество часов"
-
-#: handlers/employee.py:82
+#: handlers/employee.py:106
 msgid "Accounted hours"
 msgstr "Начисленные часы"
+
+#: handlers/employee.py:118
+msgid "Here you can write an inquiry regarding employment relations and workflow."
+msgstr ""
+"Здесь Вы можете написать обращение относительно трудовых отношений или "
+"рабочего процесса."
+
+#: handlers/employee.py:121
+msgid "You have no inquiries yet."
+msgstr "У Вас пока нет обращений."
+
+#: handlers/employee.py:133
+msgid ""
+"Enter a title for your inquiry. It will be displayed in the list of "
+"requests, so it should be brief and meaningful."
+msgstr ""
+"Введите заголовок Вашего обращения. Он будет отображаться в списке "
+"обращений и, поэтому, должен быть коротким и осмысленным."
+
+#: handlers/employee.py:147
+msgid "Enter the text of your inquiry"
+msgstr "Введите текст Вашего обращения"
 
 #: handlers/start.py:46
 msgid "Enter your personal PIN"
@@ -130,7 +148,7 @@ msgid "Login by username"
 msgstr "Войти по логину"
 
 #: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
-#: keyboards/inline.py:42 keyboards/inline.py:53
+#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:60
 msgid "Back"
 msgstr "Назад"
 
@@ -151,9 +169,15 @@ msgid "Get worked hours info"
 msgstr "Посмотреть отработанные часы"
 
 #: keyboards/inline.py:48
+msgid "Inquiries"
+msgstr "Обращения"
+
+#: keyboards/inline.py:49
 msgid "Log out of your account"
 msgstr "Выйти из личного кабинета"
 
-#~ msgid "Log out"
-#~ msgstr "Выйти из личного кабинета"
+#: keyboards/inline.py:59
+msgid "Write inquiry"
+msgstr "Написать обращение"
+
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-18 15:52+0300\n"
+"POT-Creation-Date: 2024-10-21 23:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: handlers/employee.py:29 handlers/employee.py:56 handlers/start.py:227
+#: handlers/employee.py:30 handlers/start.py:227
 msgid "Welcome"
 msgstr ""
 
-#: handlers/employee.py:78
+#: handlers/employee.py:98
 msgid "Data for"
 msgstr ""
 
-#: handlers/employee.py:80
+#: handlers/employee.py:105
 msgid "Number of days worked"
 msgstr ""
 
-#: handlers/employee.py:81
-msgid "Average number of hours"
+#: handlers/employee.py:106
+msgid "Accounted hours"
 msgstr ""
 
-#: handlers/employee.py:82
-msgid "Accounted hours"
+#: handlers/employee.py:118
+msgid "Here you can write an inquiry regarding employment relations and workflow."
+msgstr ""
+
+#: handlers/employee.py:121
+msgid "You have no inquiries yet."
+msgstr ""
+
+#: handlers/employee.py:133
+msgid ""
+"Enter a title for your inquiry. It will be displayed in the list of "
+"requests, so it should be brief and meaningful."
+msgstr ""
+
+#: handlers/employee.py:147
+msgid "Enter the text of your inquiry"
 msgstr ""
 
 #: handlers/start.py:46
@@ -128,7 +142,7 @@ msgid "Login by username"
 msgstr ""
 
 #: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
-#: keyboards/inline.py:42 keyboards/inline.py:53
+#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:60
 msgid "Back"
 msgstr ""
 
@@ -149,6 +163,14 @@ msgid "Get worked hours info"
 msgstr ""
 
 #: keyboards/inline.py:48
+msgid "Inquiries"
+msgstr ""
+
+#: keyboards/inline.py:49
 msgid "Log out of your account"
+msgstr ""
+
+#: keyboards/inline.py:59
+msgid "Write inquiry"
 msgstr ""
 
