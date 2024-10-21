@@ -11,8 +11,8 @@ async def sync_db_and_gsheets():
         data = await read_google_sheets_data_async()
     except asyncio.CancelledError:
         raise
-    except:
-        logger.warning('Error reading google sheets')
+    except Exception as e:
+        logger.warning('Error reading google sheets: \n {e}')
         return
 
     await update_db(data)
@@ -20,8 +20,8 @@ async def sync_db_and_gsheets():
         await update_google_sheets_data_async()
     except asyncio.CancelledError:
         raise
-    except:
-        logger.warning('Error updating google sheets')
+    except Exception as e:
+        logger.warning('Error reading google sheets: \n {e}')
         return
     logger.info('Finished update task')
 
