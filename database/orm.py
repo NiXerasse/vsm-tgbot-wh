@@ -158,7 +158,6 @@ async def get_wh_statistics(session: AsyncSession, tab_no: str, start_date, end_
         select(
             Subdivision.name,
             func.count().filter(TimeRecord.hours_worked > 0).label("count_nonzero"),
-            func.avg(TimeRecord.hours_worked).filter(TimeRecord.hours_worked > 0).label("avg_nonzero"),
             func.sum(TimeRecord.hours_worked).label("sum_total")
         )
         .join(Employee, Employee.id == TimeRecord.employee_id)
@@ -180,7 +179,6 @@ async def get_wh_statistics(session: AsyncSession, tab_no: str, start_date, end_
         {
             "subdivision_name": row.name,
             "count_nonzero": row.count_nonzero or 0,
-            "avg_nonzero": row.avg_nonzero or 0,
             "sum_total": row.sum_total or 0
         }
         for row in statistics

@@ -87,7 +87,6 @@ async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session,
         wh_info_subdivision = Text(
             '✅ ', Bold(wh_stat['subdivision_name'], ': '), '\n',
             ' 🔘 ', _('Number of days worked'), ': ', wh_stat['count_nonzero'], '\n',
-            ' 🔘 ', _('Average number of hours'), ': ', f'{wh_stat['avg_nonzero']:.3f}', '\n',
             ' 🔘 ', _('Accounted hours'), ': ', wh_stat['sum_total'],
             '\n',
         )
