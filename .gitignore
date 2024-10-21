@@ -3,4 +3,5 @@
 .idea
 __pycache__/
 vsmtgbot.json
+vsmtgbot_prod.json
 app.log

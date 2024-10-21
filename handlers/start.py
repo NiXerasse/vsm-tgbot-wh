@@ -25,7 +25,7 @@ vsm_logo = InputMediaPhoto(media=vsm_logo_uri)
 async def get_photo_id(message: types.Message):
     logger.warning(f'Uploaded photo with uri: {message.photo[-1].file_id}')
 
-@start_router.message(StateFilter(Unauthorised), CommandStart())
+@start_router.message(StateFilter(Unauthorised, None), CommandStart())
 async def cmd_start(message: Message, state: FSMContext, _):
     await message.delete()
 
