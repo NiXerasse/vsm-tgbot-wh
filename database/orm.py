@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.engine import session_maker
-from database.models import Subdivision, Employee, TimeRecord, User
+from database.models import Subdivision, Employee, TimeRecord, User, Inquiry
 from logger.logger import logger
 
 
@@ -183,3 +183,12 @@ async def get_wh_statistics(session: AsyncSession, tab_no: str, start_date, end_
         }
         for row in statistics
     ]
+
+async def get_inquiries_by_employee_tab_no(session: AsyncSession, tab_no: str):
+    result = await session.execute(
+        select(Inquiry)
+        .join(Employee)
+        .where(Employee.tab_no == tab_no)
+    )
+    inquiries = result.scalars().all()
+    return inquiries

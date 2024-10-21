@@ -72,3 +72,37 @@ class TimeRecord(Base):
 
     employee: Mapped["Employee"] = relationship('Employee', back_populates='time_records')
     subdivision: Mapped["Subdivision"] = relationship('Subdivision', back_populates='time_records')
+
+
+class Inquiry(Base):
+    __tablename__ = 'inquiry'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
+    subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default='open')
+
+    messages: Mapped[list["Message"]] = relationship('Message', back_populates='inquiry')
+    employee: Mapped["Employee"] = relationship('Employee')
+
+    __table_args__ = (
+        Index('idx_inquiry_employee_id', 'employee_id'),
+    )
+
+
+class Message(Base):
+    __tablename__ = 'message'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id'), nullable=False)
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'),
+                                             nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    sent_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+
+    inquiry: Mapped["Inquiry"] = relationship('Inquiry', back_populates='messages')
+    employee: Mapped["Employee"] = relationship('Employee')
+
+    __table_args__ = (
+        Index('idx_message_inquiry_id', 'inquiry_id'),
+    )

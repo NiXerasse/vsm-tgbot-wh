@@ -45,10 +45,17 @@ def get_change_login_back_button_keyboard(_):
 def get_main_keyboard(_):
     keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text=_('Get worked hours info'), callback_data='get_wh_info'))
+    keyboard.add(InlineKeyboardButton(text=_('Inquiries'), callback_data='inquiry_menu'))
     keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))
     return keyboard.adjust(1, 1).as_markup()
 
 def get_wh_info_keyboard(_):
     keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
+    return keyboard.adjust(1).as_markup()
+
+def get_inquiry_menu_keyboard(_):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Write inquiry'), callback_data='write_inquiry'))
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(1).as_markup()
