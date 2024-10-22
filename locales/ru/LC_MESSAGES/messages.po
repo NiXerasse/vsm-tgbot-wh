@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-21 23:50+0300\n"
+"POT-Creation-Date: 2024-10-22 15:39+0300\n"
 "PO-Revision-Date: 2024-10-16 17:52+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,43 +19,80 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: handlers/employee.py:30 handlers/start.py:227
+#: handlers/employee.py:33 handlers/start.py:227
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
-#: handlers/employee.py:98
+#: handlers/employee.py:106
 msgid "Data for"
 msgstr "Данные за"
 
-#: handlers/employee.py:105
+#: handlers/employee.py:113
 msgid "Number of days worked"
 msgstr "Количество отработанных дней"
 
-#: handlers/employee.py:106
+#: handlers/employee.py:114
 msgid "Accounted hours"
 msgstr "Начисленные часы"
 
-#: handlers/employee.py:118
+#: handlers/employee.py:129
 msgid "Here you can write an inquiry regarding employment relations and workflow."
 msgstr ""
 "Здесь Вы можете написать обращение относительно трудовых отношений или "
 "рабочего процесса."
 
-#: handlers/employee.py:121
+#: handlers/employee.py:131
 msgid "You have no inquiries yet."
 msgstr "У Вас пока нет обращений."
 
-#: handlers/employee.py:133
-msgid ""
-"Enter a title for your inquiry. It will be displayed in the list of "
-"requests, so it should be brief and meaningful."
-msgstr ""
-"Введите заголовок Вашего обращения. Он будет отображаться в списке "
-"обращений и, поэтому, должен быть коротким и осмысленным."
+#: handlers/employee.py:134
+msgid "Your inquiries"
+msgstr "Ваши обращения"
 
-#: handlers/employee.py:147
-msgid "Enter the text of your inquiry"
-msgstr "Введите текст Вашего обращения"
+#: handlers/employee.py:141
+msgid "To work with inquiry press a button with corresponding number below"
+msgstr "Для работы с обращением, нажмите кнопку с соответствующим номером ниже"
+
+#: handlers/employee.py:151
+msgid "Date"
+msgstr "Дата"
+
+#: handlers/employee.py:171
+msgid "The inquiry"
+msgstr "Обращение"
+
+#: handlers/employee.py:173
+msgid "will be deleted"
+msgstr "будет удалено"
+
+#: handlers/employee.py:191
+msgid "Enter a text for your inquiry with topic"
+msgstr "Введите текст для Вашего обращения с темой"
+
+#: handlers/employee.py:206
+msgid "You are adding the message to the inquiry with topic"
+msgstr "Вы добавляете сообщение в обращение с темой:"
+
+#: handlers/employee.py:208
+msgid "Content of the message"
+msgstr "Содержание сообщения"
+
+#: handlers/employee.py:230
+msgid "Enter a topic for your inquiry."
+msgstr "Введите тему Вашего обращения"
+
+#: handlers/employee.py:232
+msgid ""
+"It will be displayed in the list of requests, so it should be brief and "
+"meaningful."
+msgstr ""
+"Она будет отображаться в списке обращений и, поэтому, должна быть "
+"короткой и осмысленной."
+
+#: handlers/employee.py:248
+#, fuzzy
+msgid "Enter the text for the inquiry with topic"
+msgstr "Введите текст для обращения с темой"
 
 #: handlers/start.py:46
 msgid "Enter your personal PIN"
@@ -148,7 +185,8 @@ msgid "Login by username"
 msgstr "Войти по логину"
 
 #: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
-#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:60
+#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:69
+#: keyboards/inline.py:75 keyboards/inline.py:82 keyboards/inline.py:88
 msgid "Back"
 msgstr "Назад"
 
@@ -176,8 +214,23 @@ msgstr "Обращения"
 msgid "Log out of your account"
 msgstr "Выйти из личного кабинета"
 
-#: keyboards/inline.py:59
+#: keyboards/inline.py:68
 msgid "Write inquiry"
 msgstr "Написать обращение"
 
+#: keyboards/inline.py:74
+msgid "Send"
+msgstr "Отправить"
+
+#: keyboards/inline.py:80
+msgid "Add a message"
+msgstr "Добавить сообщение"
+
+#: keyboards/inline.py:81
+msgid "Delete the entire inquiry"
+msgstr "Удалить обращение полностью"
+
+#: keyboards/inline.py:87
+msgid "Delete"
+msgstr "Удалить"
 

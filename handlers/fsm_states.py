@@ -16,6 +16,11 @@ class Unauthorised(StatesGroup):
 class Authorised(StatesGroup):
     start_menu = State()
     inquiry_menu = State()
+    viewing_inquiry = State()
+    deleting_inquiry = State()
+    deleting_inquiry_last_chance = State()
+    adding_message = State()
+    sending_message = State()
     entering_inquiry_head = State()
     entered_inquiry_head = State()
     entering_inquiry_body = State()

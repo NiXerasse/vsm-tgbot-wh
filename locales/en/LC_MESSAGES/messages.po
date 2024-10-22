@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-21 23:50+0300\n"
+"POT-Creation-Date: 2024-10-22 15:39+0300\n"
 "PO-Revision-Date: 2024-10-16 17:51+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,38 +18,74 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: handlers/employee.py:30 handlers/start.py:227
+#: handlers/employee.py:33 handlers/start.py:227
 msgid "Welcome"
 msgstr ""
 
-#: handlers/employee.py:98
+#: handlers/employee.py:106
 msgid "Data for"
 msgstr ""
 
-#: handlers/employee.py:105
+#: handlers/employee.py:113
 msgid "Number of days worked"
 msgstr ""
 
-#: handlers/employee.py:106
+#: handlers/employee.py:114
 msgid "Accounted hours"
 msgstr ""
 
-#: handlers/employee.py:118
+#: handlers/employee.py:129
 msgid "Here you can write an inquiry regarding employment relations and workflow."
 msgstr ""
 
-#: handlers/employee.py:121
+#: handlers/employee.py:131
 msgid "You have no inquiries yet."
 msgstr ""
 
-#: handlers/employee.py:133
-msgid ""
-"Enter a title for your inquiry. It will be displayed in the list of "
-"requests, so it should be brief and meaningful."
+#: handlers/employee.py:134
+msgid "Your inquiries"
 msgstr ""
 
-#: handlers/employee.py:147
-msgid "Enter the text of your inquiry"
+#: handlers/employee.py:141
+msgid "To work with inquiry press a button with corresponding number below"
+msgstr ""
+
+#: handlers/employee.py:151
+msgid "Date"
+msgstr ""
+
+#: handlers/employee.py:171
+msgid "The inquiry"
+msgstr ""
+
+#: handlers/employee.py:173
+msgid "will be deleted"
+msgstr ""
+
+#: handlers/employee.py:191
+msgid "Enter a text for your inquiry with topic"
+msgstr ""
+
+#: handlers/employee.py:206
+msgid "You are adding the message to the inquiry with topic"
+msgstr ""
+
+#: handlers/employee.py:208
+msgid "Content of the message"
+msgstr ""
+
+#: handlers/employee.py:230
+msgid "Enter a topic for your inquiry."
+msgstr ""
+
+#: handlers/employee.py:232
+msgid ""
+"It will be displayed in the list of requests, so it should be brief and "
+"meaningful."
+msgstr ""
+
+#: handlers/employee.py:248
+msgid "Enter the text for the inquiry with topic"
 msgstr ""
 
 #: handlers/start.py:46
@@ -143,7 +179,8 @@ msgid "Login by username"
 msgstr ""
 
 #: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
-#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:60
+#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:69
+#: keyboards/inline.py:75 keyboards/inline.py:82 keyboards/inline.py:88
 msgid "Back"
 msgstr ""
 
@@ -171,8 +208,24 @@ msgstr ""
 msgid "Log out of your account"
 msgstr ""
 
-#: keyboards/inline.py:59
+#: keyboards/inline.py:68
 msgid "Write inquiry"
+msgstr ""
+
+#: keyboards/inline.py:74
+msgid "Send"
+msgstr ""
+
+#: keyboards/inline.py:80
+msgid "Add a message"
+msgstr ""
+
+#: keyboards/inline.py:81
+msgid "Delete the entire inquiry"
+msgstr ""
+
+#: keyboards/inline.py:87
+msgid "Delete"
 msgstr ""
 
 #~ msgid ""
@@ -231,5 +284,27 @@ msgstr ""
 #~ " will be displayed in the list "
 #~ "of requests, so it should be brief"
 #~ " and meaningful "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enter a title for your inquiry. It"
+#~ " will be displayed in the list "
+#~ "of requests, so it should be brief"
+#~ " and meaningful."
+#~ msgstr ""
+
+#~ msgid "Enter the text of your inquiry"
+#~ msgstr ""
+
+#~ msgid "Delete the inquiry"
+#~ msgstr ""
+
+#~ msgid "Enter a title for your inquiry."
+#~ msgstr ""
+
+#~ msgid "Enter the text for the inquire titled:"
+#~ msgstr ""
+
+#~ msgid "Enter the text for the inquire with topic:"
 #~ msgstr ""
 

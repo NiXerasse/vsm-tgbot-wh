@@ -82,7 +82,7 @@ class Inquiry(Base):
     subject: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default='open')
 
-    messages: Mapped[list["Message"]] = relationship('Message', back_populates='inquiry')
+    messages: Mapped[list["Message"]] = relationship('Message', back_populates='inquiry', cascade='all, delete')
     employee: Mapped["Employee"] = relationship('Employee')
 
     __table_args__ = (
@@ -105,4 +105,16 @@ class Message(Base):
 
     __table_args__ = (
         Index('idx_message_inquiry_id', 'inquiry_id'),
+    )
+
+class SubdivisionMessageThread(Base):
+    __tablename__ = 'subdivision_message_thread'
+
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), primary_key=True, nullable=False)
+    message_thread_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision')
+
+    __table_args__ = (
+        UniqueConstraint('subdivision_id', 'message_thread_id', name='uq_subdivision_message_thread'),
     )

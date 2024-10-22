@@ -54,8 +54,36 @@ def get_wh_info_keyboard(_):
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(1).as_markup()
 
-def get_inquiry_menu_keyboard(_):
+def get_inquiry_menu_keyboard(inquiries, _):
     keyboard = InlineKeyboardBuilder()
+    inquiries_cnt = len(inquiries)
+    inq_on_one_line = 4
+    adj = []
+    if inquiries_cnt:
+        adj = [inq_on_one_line] * (inquiries_cnt // inq_on_one_line)
+        if inquiries_cnt % inq_on_one_line:
+            adj.append(inquiries_cnt % inq_on_one_line)
+    for i, inquiry in enumerate(inquiries, start=1):
+        keyboard.add(InlineKeyboardButton(text=f'{i}', callback_data=f'inquiry_menu_{inquiry.id}'))
     keyboard.add(InlineKeyboardButton(text=_('Write inquiry'), callback_data='write_inquiry'))
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
-    return keyboard.adjust(1).as_markup()
+    return keyboard.adjust(*adj, 1, 1).as_markup()
+
+def get_send_back_button_keyboard(_):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Send'), callback_data=f'send_button'))
+    keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
+    return keyboard.adjust(2).as_markup()
+
+def get_write_delete_back_button_keyboard(inquiry_id, _):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Add a message'), callback_data=f'add_message_{inquiry_id}'))
+    keyboard.add(InlineKeyboardButton(text=_('Delete the entire inquiry'), callback_data=f'delete_inquiry_{inquiry_id}'))
+    keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
+    return keyboard.adjust(1, 1, 1).as_markup()
+
+def get_delete_back_button_keyboard(inquiry_id, _):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Delete'), callback_data=f'delete_inquiry_{inquiry_id}'))
+    keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
+    return keyboard.adjust(2).as_markup()

@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import CommandStart, StateFilter, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto
 from aiogram.utils.formatting import Text, Bold
@@ -20,6 +20,11 @@ start_router = Router()
 start_router.include_router(employee_router)
 
 vsm_logo = InputMediaPhoto(media=vsm_logo_uri)
+
+@start_router.message(Command('get_my_id'))
+async def get_my_id(message: Message):
+    logger.warning('get_my_id')
+    await message.answer(text=f'user_id = {message.from_user.id}\nchat_id={message.chat.id}')
 
 @start_router.message(F.photo)
 async def get_photo_id(message: types.Message):

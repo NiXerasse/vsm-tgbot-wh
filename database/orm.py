@@ -4,9 +4,10 @@ from datetime import datetime
 from sqlalchemy import select, and_, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from database.engine import session_maker
-from database.models import Subdivision, Employee, TimeRecord, User, Inquiry
+from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread
 from logger.logger import logger
 
 
@@ -192,3 +193,94 @@ async def get_inquiries_by_employee_tab_no(session: AsyncSession, tab_no: str):
     )
     inquiries = result.scalars().all()
     return inquiries
+
+async def get_inquiry_with_messages_by_id(session: AsyncSession, inquiry_id: int):
+    result = await session.execute(
+        select(Inquiry).options(selectinload(Inquiry.messages)).where(Inquiry.id == inquiry_id)
+    )
+    return result.scalar_one_or_none()
+
+async def get_inquiry_by_id(session: AsyncSession, inquiry_id: int):
+    result = await session.execute(
+        select(Inquiry)
+        .where(Inquiry.id == inquiry_id)
+    )
+    return result.scalar_one_or_none()
+
+async def create_inquiry(session, tab_no: str, inquiry_head: str, inquiry_body: str):
+    result = await session.execute(
+        select(Employee).where(Employee.tab_no == tab_no)
+    )
+    employee = result.scalar_one_or_none()
+
+    if employee is None:
+        raise ValueError(f'Employee with tab_no {tab_no} not found')
+
+    new_inquiry = Inquiry(
+        employee_id=employee.id,
+        subject=inquiry_head,
+        status='open'
+    )
+    session.add(new_inquiry)
+    await session.flush()
+
+    new_message = Message(
+        inquiry_id=new_inquiry.id,
+        employee_id=employee.id,
+        content=inquiry_body
+    )
+    session.add(new_message)
+
+    await session.commit()
+    return new_inquiry
+
+async def delete_inquiry_by_id(session, inquiry_id: int):
+    result = await session.execute(
+        select(Inquiry).where(Inquiry.id == inquiry_id)
+    )
+    inquiry = result.scalar_one_or_none()
+
+    if inquiry is None:
+        raise ValueError(f"Inquiry with id {inquiry_id} not found")
+
+    await session.delete(inquiry)
+    await session.commit()
+
+async def add_message_to_inquiry(session, inquiry_id: int, message_text: str):
+    result = await session.execute(
+        select(Inquiry).where(Inquiry.id == inquiry_id)
+    )
+    inquiry = result.scalar_one_or_none()
+
+    if inquiry is None:
+        raise ValueError(f"Inquiry with id {inquiry_id} not found")
+
+    employee_id = inquiry.employee_id
+
+    new_message = Message(
+        inquiry_id=inquiry.id,
+        employee_id=employee_id,
+        content=message_text
+    )
+
+    session.add(new_message)
+
+    inquiry.status = 'open'
+    session.add(inquiry)
+
+    await session.commit()
+
+async def get_subdivisions(session):
+    result = await session.execute(
+        select(Subdivision)
+    )
+    return result.scalars().all()
+
+async def upsert_subdivision_message_thread(session: AsyncSession, subdivision_id: int, message_thread_id: int):
+    new_entry = SubdivisionMessageThread(
+        subdivision_id=subdivision_id,
+        message_thread_id=message_thread_id
+    )
+    await session.merge(new_entry)
+    await session.commit()
+    return new_entry

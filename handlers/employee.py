@@ -10,11 +10,14 @@ from aiogram.utils.formatting import Bold, Text
 from babel.dates import get_month_names
 from dateutil.relativedelta import relativedelta
 
-from database.orm import get_employee, get_wh_statistics, get_inquiries_by_employee_tab_no
+from database.models import Inquiry
+from database.orm import get_employee, get_wh_statistics, get_inquiries_by_employee_tab_no, create_inquiry, \
+    get_inquiry_with_messages_by_id, get_inquiry_by_id, delete_inquiry_by_id, add_message_to_inquiry
 from handlers.fsm_states import Authorised, Unauthorised
 from handlers.utils import update_start_message, vsm_logo_uri, update_callback_query_data
 from keyboards.inline import get_main_keyboard, get_start_keyboard, get_wh_info_keyboard, get_inquiry_menu_keyboard, \
-    get_back_button_keyboard
+    get_back_button_keyboard, get_save_back_button_keyboard, get_send_back_button_keyboard, \
+    get_write_delete_back_button_keyboard, get_delete_back_button_keyboard
 from logger.logger import logger
 
 employee_router = Router()
@@ -58,20 +61,25 @@ async def log_out(callback_query: CallbackQuery, state: FSMContext, _):
 @employee_router.callback_query(
     StateFilter(
         Authorised.wh_info, Authorised.inquiry_menu,
-        Authorised.entering_inquiry_head, Authorised.entering_inquiry_body
+        Authorised.entering_inquiry_head, Authorised.entering_inquiry_body,
+        Authorised.entered_inquiry_body, Authorised.viewing_inquiry,
+        Authorised.deleting_inquiry_last_chance, Authorised.adding_message,
+        Authorised.sending_message
     ),
     (F.data == 'back_button'))
 async def back(callback_query: CallbackQuery, state: FSMContext, session, _):
     state_str = await state.get_state()
     message = callback_query.message
-    if state_str == 'Authorised:entering_inquiry_head':
+    if state_str in ['Authorised:entering_inquiry_head', 'Authorised:viewing_inquiry',
+                     'Authorised:deleting_inquiry_last_chance', 'Authorised:adding_message',
+                     'Authorised:sending_message']:
         new_callback_query = update_callback_query_data(callback_query, 'inquiry_menu')
         await inquiry_menu(new_callback_query, state, session, _)
     elif state_str == 'Authorised:entering_inquiry_body':
-        inquiry_head_msg_id = (await state.get_data()).get('inquiry_head_msg_id')
-        await message.bot.delete_message(chat_id=message.chat.id, message_id=inquiry_head_msg_id)
         new_callback_query = update_callback_query_data(callback_query, 'write_inquiry')
         await enter_inquiry_head(new_callback_query, state, session, _)
+    elif state_str == 'Authorised:entered_inquiry_body':
+        await enter_inquiry_body(callback_query.message, state, _)
     else:
         await cmd_start(message, state, session, _)
 
@@ -115,38 +123,151 @@ async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session,
 async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session, _):
     tab_no = (await state.get_data()).get('tab_no')
     inquiries = await get_inquiries_by_employee_tab_no(session, tab_no)
-    inquiries_message = Text('🚹 ', _('Here you can write an inquiry regarding employment relations and workflow.'), '\n\n')
+    inquiries_message = Text()
     if not inquiries:
+        inquiries_message = Text(
+            '🚹 ', _('Here you can write an inquiry regarding employment relations and workflow.'), '\n\n')
         inquiries_message += Text(
             ' 🔘 ', _('You have no inquiries yet.'), '\n'
         )
     else:
-        ...
-    await update_start_message(callback_query.message, state, inquiries_message.as_markdown(), get_inquiry_menu_keyboard(_))
-    state = await state.set_state(Authorised.inquiry_menu)
+        inquiries_message += Text('🚹 ', Bold(_('Your inquiries'), ': '), '\n\n')
+        for i, inquiry in enumerate(inquiries, start=1):
+            inquiries_message += Text(
+                ' 🔘 ', f'{i}. ', Bold(inquiry.subject), '\n',
+            )
+        inquiries_message += Text(
+            '\n\n',
+            Bold('🚹 ', _('To work with inquiry press a button with corresponding number below'), ' ⤵️', '\n')
+        )
+    await update_start_message(callback_query.message, state, inquiries_message.as_markdown(), get_inquiry_menu_keyboard(inquiries, _))
+    await state.set_state(Authorised.inquiry_menu)
+
+def format_inquiry(inquiry, _):
+    inquiry_message = Text('✅ ', Bold(inquiry.subject), '\n\n')
+
+    for msg in inquiry.messages:
+        inquiry_message += Text(
+            '🚹 ', Bold(_('Date'), ': ', msg.sent_at.strftime('%d-%m-%y %H:%M')), '\n'
+            ' 🔘 ', msg.content, '\n\n'
+        )
+
+    return inquiry_message
+
+@employee_router.callback_query(StateFilter(Authorised.inquiry_menu), (F.data.startswith('inquiry_menu_')))
+async def show_inquiry(callback_query: CallbackQuery, state: FSMContext, session, _):
+    inquiry_id = int(callback_query.data.split('_')[-1])
+    inquiry = await get_inquiry_with_messages_by_id(session, inquiry_id)
+    await update_start_message(
+        callback_query.message, state, format_inquiry(inquiry, _).as_markdown(),
+        get_write_delete_back_button_keyboard(inquiry_id, _))
+    await state.set_state(Authorised.viewing_inquiry)
+
+@employee_router.callback_query(StateFilter(Authorised.viewing_inquiry), (F.data.startswith('delete_inquiry_')))
+async def delete_inquiry(callback_query: CallbackQuery, state, session, _):
+    inquiry_id = int(callback_query.data.split('_')[-1])
+    inquiry = await get_inquiry_by_id(session, inquiry_id)
+    are_you_sure_message = Text(
+        Bold('⁉️ ', _('The inquiry'), ': ', '\n\n'),
+        Bold('⁉️', inquiry.subject), '\n\n',
+        Bold('⁉️ ', _('will be deleted'), '!', '\n')
+    )
+    await update_start_message(callback_query.message, state, are_you_sure_message.as_markdown(),
+                               get_delete_back_button_keyboard(inquiry_id, _))
+    await state.set_state(Authorised.deleting_inquiry_last_chance)
+
+@employee_router.callback_query(StateFilter(Authorised.deleting_inquiry_last_chance), (F.data.startswith('delete_inquiry_')))
+async def do_delete_inquiry(callback_query: CallbackQuery, state, session, _):
+    inquiry_id = int(callback_query.data.split('_')[-1])
+    await delete_inquiry_by_id(session, inquiry_id)
+    new_callback_query = update_callback_query_data(callback_query, 'inquiry_menu')
+    await inquiry_menu(new_callback_query, state, session, _)
+
+@employee_router.callback_query(StateFilter(Authorised.viewing_inquiry), (F.data.startswith('add_message_')))
+async def write_message_text(callback_query: CallbackQuery, state, session, _):
+    inquiry_id = int(callback_query.data.split('_')[-1])
+    inquiry = await get_inquiry_by_id(session, inquiry_id)
+    enter_text_message = Text(
+        Bold('🚹 ', _('Enter a text for your inquiry with topic'), ': ⤵️'),
+        '\n\n',
+        Bold(' 🔘 ', inquiry.subject),
+    )
+
+    await update_start_message(callback_query.message, state, enter_text_message.as_markdown(), get_back_button_keyboard(_))
+    await state.update_data({'inquiry_id': inquiry_id})
+    await state.set_state(Authorised.adding_message)
+
+@employee_router.message(Authorised.adding_message)
+async def add_message(message: Message, state: FSMContext, session, _):
+    fsm_data = await state.get_data()
+    inquiry_id = fsm_data['inquiry_id']
+    inquiry = await get_inquiry_by_id(session, inquiry_id)
+    being_added_message = Text(
+        '🚹 ', _('You are adding the message to the inquiry with topic'), ': ', '\n',
+        Bold(' 🔘 ', inquiry.subject), '\n\n',
+        Bold('🚹 ', _('Content of the message'), ': '), '\n',
+        ' 🔘 ', message.text, '\n'
+    )
+
+    await update_start_message(message, state, being_added_message.as_markdown(), get_send_back_button_keyboard(_))
+    await message.delete()
+    await state.update_data({'being_added_message': message.text})
+    await state.set_state(Authorised.sending_message)
+
+@employee_router.callback_query(StateFilter(Authorised.sending_message), (F.data == 'send_button'))
+async def send_message(callback_query: CallbackQuery, state, session, _):
+    fsm_data = await state.get_data()
+    inquiry_id = fsm_data['inquiry_id']
+    message_text = fsm_data['being_added_message']
+    await add_message_to_inquiry(session, inquiry_id, message_text)
+
+    new_callback_query = update_callback_query_data(callback_query, f'inquiry_menu_{inquiry_id}')
+    await show_inquiry(new_callback_query, state, session, _)
 
 @employee_router.callback_query(StateFilter(Authorised.inquiry_menu), (F.data == 'write_inquiry'))
 async def enter_inquiry_head(callback_query: CallbackQuery, state: FSMContext, session, _):
     enter_inquiry_head_message = Text(
-        Bold(
-            '🚹 ',
-            _('Enter a title for your inquiry. '
-              'It will be displayed in the list of requests, so it should be brief and meaningful.'), ' ⤵️', '\n'
-        )
+        Bold('🚹 ', _('Enter a topic for your inquiry.')),
+        '\n\n',
+        _('It will be displayed in the list of requests, so it should be brief and meaningful.'), ' ⤵️', '\n'
     )
     await update_start_message(callback_query.message, state, enter_inquiry_head_message.as_markdown(),
                                get_back_button_keyboard(_))
     await state.set_state(Authorised.entering_inquiry_head)
 
-@employee_router.message(StateFilter(Authorised.entering_inquiry_head))
-async def process_inquiry_head(message: Message, state: FSMContext, session, _):
+@employee_router.message(Authorised.entering_inquiry_head)
+async def process_inquiry_head(message: Message, state: FSMContext, _):
     await state.update_data({'inquiry_head_msg_id': message.message_id, 'inquiry_head': message.text})
+    await enter_inquiry_body(message, state, _)
+    await message.bot.delete_message(message.chat.id, (await state.get_data())['inquiry_head_msg_id'])
+
+async def enter_inquiry_body(message: Message, state: FSMContext, _):
     enter_inquiry_body_message = Text(
         Bold(
             '🚹 ',
-            _('Enter the text of your inquiry'), ' ⤵️', '\n'
+            _('Enter the text for the inquiry with topic'), ': ', '\n\n',
+            ' 🔘 ', (await state.get_data())['inquiry_head'], ' ⤵️', '\n'
         )
     )
     await update_start_message(message, state, enter_inquiry_body_message.as_markdown(), get_back_button_keyboard(_))
     await state.set_state(Authorised.entering_inquiry_body)
-    ...
+
+@employee_router.message(Authorised.entering_inquiry_body)
+async def process_inquiry_body(message: Message, state: FSMContext, session, _):
+    fsm_data = await state.get_data()
+    await state.update_data({'inquiry_body_msg_id': message.message_id, 'inquiry_body': message.text})
+    inquiry_text_message = Text(
+        '✅ ', Bold(fsm_data['inquiry_head']), '\n\n',
+        ' 🔘 ', message.text, '\n'
+    )
+
+    await update_start_message(message, state, inquiry_text_message.as_markdown(), get_send_back_button_keyboard(_))
+    await state.set_state(Authorised.entered_inquiry_body)
+    await message.bot.delete_message(message.chat.id, (await state.get_data())['inquiry_body_msg_id'])
+
+@employee_router.callback_query(StateFilter(Authorised.entered_inquiry_body), (F.data == 'send_button'))
+async def send_inquiry(callback_query: CallbackQuery, state: FSMContext, session, _):
+    fsm_data = await state.get_data()
+    await create_inquiry(session, fsm_data['tab_no'], fsm_data['inquiry_head'], fsm_data['inquiry_body'])
+    new_callback_query = update_callback_query_data(callback_query, 'inquiry_menu')
+    await inquiry_menu(new_callback_query, state, session, _)
