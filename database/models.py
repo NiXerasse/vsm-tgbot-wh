@@ -111,10 +111,16 @@ class SubdivisionMessageThread(Base):
     __tablename__ = 'subdivision_message_thread'
 
     subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), primary_key=True, nullable=False)
-    message_thread_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    message_thread_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
 
     subdivision: Mapped["Subdivision"] = relationship('Subdivision')
 
     __table_args__ = (
         UniqueConstraint('subdivision_id', 'message_thread_id', name='uq_subdivision_message_thread'),
     )
+
+class InquiryMessageMapping(Base):
+    __tablename__ = 'inquiry_message_mapping'
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), primary_key=True)
+    message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    subdivision_thread_id: Mapped[int] = mapped_column(ForeignKey('subdivision_message_thread.message_thread_id'), nullable=False)

@@ -8,6 +8,7 @@ from aiogram import types
 from logger.logger import logger
 
 vsm_logo_uri = os.getenv('LOGO_URI')
+admin_group_id = os.getenv('ADMIN_GROUP_ID')
 
 async def update_start_message(message: Message, state: FSMContext, caption: str, markup: types.InlineKeyboardMarkup | None):
     start_msg_id = (await state.get_data()).get('start_msg_id')

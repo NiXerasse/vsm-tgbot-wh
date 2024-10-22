@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from database.engine import session_maker
-from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread
+from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread, \
+    InquiryMessageMapping
 from logger.logger import logger
 
 
@@ -284,3 +285,34 @@ async def upsert_subdivision_message_thread(session: AsyncSession, subdivision_i
     await session.merge(new_entry)
     await session.commit()
     return new_entry
+
+async def get_subdivisions_by_employee_tab_no(session: AsyncSession, tab_no: str) -> list[Subdivision]:
+    result = await session.execute(
+        select(Subdivision)
+        .join(TimeRecord, TimeRecord.subdivision_id == Subdivision.id)
+        .join(Employee, Employee.id == TimeRecord.employee_id)
+        .where(Employee.tab_no == tab_no)
+    )
+
+    subdivisions = result.scalars().all()
+    return list(subdivisions)
+
+async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
+    result = await session.execute(
+        select(SubdivisionMessageThread.message_thread_id)
+        .where(SubdivisionMessageThread.subdivision_id == subdivision_id)
+    )
+
+    return result.scalar()
+
+
+async def upsert_inquiry_message_mapping(
+        session: AsyncSession, inquiry_id: int, message_id: int, message_thread_id: int):
+    inquiry_message_mapping = InquiryMessageMapping(
+        inquiry_id=inquiry_id,
+        message_id=message_id,
+        subdivision_thread_id=message_thread_id
+    )
+
+    await session.merge(inquiry_message_mapping)
+    await session.commit()
