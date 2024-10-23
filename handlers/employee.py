@@ -29,6 +29,7 @@ employee_router = Router()
 
 @employee_router.message(StateFilter(Authorised), CommandStart())
 async def cmd_start(message: Message, state: FSMContext, session, _):
+    logger.warning('/start invoked')
 
     fsm_data = await state.get_data()
     tab_no = fsm_data.get('tab_no')

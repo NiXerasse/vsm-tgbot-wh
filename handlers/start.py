@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from aiogram.filters import CommandStart, StateFilter, Command
+from aiogram.filters import CommandStart, StateFilter, Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto
 from aiogram.utils.formatting import Text, Bold

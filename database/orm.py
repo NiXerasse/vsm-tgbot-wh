@@ -342,3 +342,15 @@ async def get_service_sub_id(session, name: str):
         .where(Subdivision.name == name)
     )
     return result.scalar()
+
+async def get_user_data(session: AsyncSession, user_id: int):
+    result = await session.execute(
+        select(User)
+        .where(
+            and_(
+                User.user_id == user_id,
+                User.chat_id > 0
+            )
+        )
+    )
+    return result.scalar_one_or_none()
