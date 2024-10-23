@@ -24,7 +24,7 @@ async def registering_message_thread_id(message: Message, session):
     for subdivision in subdivisions:
         keyboard.add(InlineKeyboardButton(
             text=subdivision.name,
-            callback_data=f'register_{subdivision.id}_{message.message_id}'))
+            callback_data=f'register_{subdivision.id}_{message.message_thread_id}'))
 
     await message.answer(
         text=register_message.as_markdown(),
@@ -35,6 +35,7 @@ async def registering_message_thread_id(message: Message, session):
 @admin_group_router.callback_query(ChatTypeFilter(chat_type=['group', 'supergroup']), (F.data.startswith('register_')))
 async def register_message_thread_id(callback_query: CallbackQuery, session):
     _, subdivision_id, message_thread_id = callback_query.data.split('_')
-    await upsert_subdivision_message_thread(session, int(subdivision_id), int(message_thread_id))
+    message_thread_id = int(message_thread_id) if message_thread_id != 'None' else 0
+    await upsert_subdivision_message_thread(session, int(subdivision_id), message_thread_id)
     await callback_query.message.delete()
     await callback_query.answer(text='Успешно зарегистрировано!', show_alert=True)

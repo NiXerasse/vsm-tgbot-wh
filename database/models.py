@@ -50,10 +50,19 @@ class Subdivision(Base):
     __tablename__ = 'subdivision'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    gsheets_id: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     time_records: Mapped[list["TimeRecord"]] = relationship('TimeRecord', back_populates='subdivision')
+    gsheets: Mapped["SubdivisionGSheet"] = relationship(
+        'SubdivisionGSheet', back_populates='subdivision', uselist=False)
+
+class SubdivisionGSheet(Base):
+    __tablename__ = 'subdivision_gsheet'
+
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), primary_key=True)
+    gsheets_id: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision', back_populates='gsheets')
 
 
 class TimeRecord(Base):
@@ -79,6 +88,7 @@ class Inquiry(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), nullable=False)
     subject: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default='open')
 
@@ -123,4 +133,4 @@ class InquiryMessageMapping(Base):
     __tablename__ = 'inquiry_message_mapping'
     inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), primary_key=True)
     message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    subdivision_thread_id: Mapped[int] = mapped_column(ForeignKey('subdivision_message_thread.message_thread_id'), nullable=False)
+    message_thread_id: Mapped[int] = mapped_column(ForeignKey('subdivision_message_thread.message_thread_id'), nullable=False)

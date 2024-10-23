@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
@@ -9,16 +9,19 @@ from aiogram.filters import StateFilter, CommandStart
 from aiogram.utils.formatting import Bold, Text
 from babel.dates import get_month_names
 from dateutil.relativedelta import relativedelta
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped
 
 from database.models import Inquiry
 from database.orm import get_employee, get_wh_statistics, get_inquiries_by_employee_tab_no, create_inquiry, \
     get_inquiry_with_messages_by_id, get_inquiry_by_id, delete_inquiry_by_id, add_message_to_inquiry, \
-    get_subdivisions_by_employee_tab_no, get_message_thread_by_subdivision_id, upsert_inquiry_message_mapping
+    get_subdivisions_by_employee_tab_no, get_message_thread_by_subdivision_id, upsert_inquiry_message_mapping, \
+    get_inquiry_message_mapping
 from handlers.fsm_states import Authorised, Unauthorised
 from handlers.utils import update_start_message, vsm_logo_uri, update_callback_query_data, admin_group_id
 from keyboards.inline import get_main_keyboard, get_start_keyboard, get_wh_info_keyboard, get_inquiry_menu_keyboard, \
     get_back_button_keyboard, get_save_back_button_keyboard, get_send_back_button_keyboard, \
-    get_write_delete_back_button_keyboard, get_delete_back_button_keyboard
+    get_write_delete_back_button_keyboard, get_delete_back_button_keyboard, get_inquiry_answer_keyboard
 from locales.locales import gettext
 from logger.logger import logger
 
@@ -146,7 +149,15 @@ async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session
     await state.set_state(Authorised.inquiry_menu)
 
 def format_inquiry(inquiry, _):
-    inquiry_message = Text('✅ ', Bold(inquiry.subject), '\n\n')
+    inquiry_message = Text(
+        '🚹 ', Bold(inquiry.employee.full_name), '\n',
+        '🚹 ', Bold(inquiry.employee.tab_no), '\n',
+        '\n'
+    )
+
+    inquiry_message += Text(
+        '✅ ', Bold(_('Topic'), ': ', inquiry.subject), '\n',
+    )
 
     for msg in inquiry.messages:
         inquiry_message += Text(
@@ -270,19 +281,36 @@ async def process_inquiry_body(message: Message, state: FSMContext, session, _):
 @employee_router.callback_query(StateFilter(Authorised.entered_inquiry_body), (F.data == 'send_button'))
 async def send_inquiry(callback_query: CallbackQuery, state: FSMContext, session, _):
     fsm_data = await state.get_data()
-    inquiry = await create_inquiry(session, fsm_data['tab_no'], fsm_data['inquiry_head'], fsm_data['inquiry_body'])
     subdivision, *others = await get_subdivisions_by_employee_tab_no(session, fsm_data['tab_no'])
-    # TODO If there's more than one subdivision, ask employee to choose
+    # TODO If there's more than one subdivision or there's no known subdivision, ask employee to choose
 
-    message_thread_id = await get_message_thread_by_subdivision_id(session, subdivision.id)
-    inquiry_msg = await callback_query.bot.send_message(
-        chat_id=admin_group_id,
-        message_thread_id=message_thread_id,
-        parse_mode=ParseMode.MARKDOWN,
-        text=format_inquiry(inquiry, gettext.get('ru')),
-    )
-
-    await upsert_inquiry_message_mapping(session, inquiry.id, inquiry_msg.message_id, message_thread_id)
+    inquiry = await create_inquiry(session, fsm_data['tab_no'], subdivision.id, fsm_data['inquiry_head'], fsm_data['inquiry_body'])
+    await publish_inquiry_to_admin_group(session, callback_query.bot, inquiry)
 
     new_callback_query = update_callback_query_data(callback_query, 'inquiry_menu')
     await inquiry_menu(new_callback_query, state, session, _)
+
+async def publish_inquiry_to_admin_group(session: AsyncSession, bot: Bot, inquiry: Inquiry):
+    inq_mess_map = await get_inquiry_message_mapping(session, inquiry.id)
+    if inq_mess_map is not None:
+        try:
+            await bot.delete_message(
+                chat_id=admin_group_id,
+                message_id=inq_mess_map.message_id,
+            )
+        except TelegramBadRequest:
+            ...
+
+    message_thread_id = inq_mess_map.message_thread_id \
+        if inq_mess_map is not None \
+        else (await get_message_thread_by_subdivision_id(session, inquiry.subdivision_id))
+
+    inquiry_msg = await bot.send_message(
+        chat_id=admin_group_id,
+        message_thread_id=message_thread_id,
+        text=format_inquiry(inquiry, gettext.get('ru')).as_markdown(),
+        parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=get_inquiry_answer_keyboard(inquiry.id, gettext.get('ru'))
+    )
+
+    await upsert_inquiry_message_mapping(session, inquiry.id, inquiry_msg.message_id, message_thread_id)

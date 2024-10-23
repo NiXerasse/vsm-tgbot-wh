@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 
 from database.engine import session_maker
 from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread, \
-    InquiryMessageMapping
+    InquiryMessageMapping, SubdivisionGSheet
 from logger.logger import logger
 
 
@@ -21,17 +21,25 @@ def generate_pass():
 def format_tab_no(tab_no: str) -> str:
     return tab_no.upper().replace('B', 'В').replace('C', 'С').replace('M', 'М').replace('K', 'К')
 
+
 async def add_subdivision(session: AsyncSession, name: str, gsheets_id: str):
     result = await session.execute(
-        select(Subdivision).where(Subdivision.gsheets_id == gsheets_id)
+        select(Subdivision).join(SubdivisionGSheet).where(SubdivisionGSheet.gsheets_id == gsheets_id)
     )
     subdivision_rec = result.scalars().first()
+
     if subdivision_rec is None:
-        subdivision_rec = Subdivision(name=name, gsheets_id=gsheets_id)
+        subdivision_rec = Subdivision(name=name)
         session.add(subdivision_rec)
+        await session.flush()
+
+        gsheet_rec = SubdivisionGSheet(subdivision_id=subdivision_rec.id, gsheets_id=gsheets_id)
+        session.add(gsheet_rec)
+
         await session.commit()
         await session.refresh(subdivision_rec)
         logger.info(f'Added subdivision: \n{subdivision_rec}')
+
     elif subdivision_rec.name != name:
         subdivision_rec.name = name
         session.add(subdivision_rec)
@@ -197,7 +205,9 @@ async def get_inquiries_by_employee_tab_no(session: AsyncSession, tab_no: str):
 
 async def get_inquiry_with_messages_by_id(session: AsyncSession, inquiry_id: int):
     result = await session.execute(
-        select(Inquiry).options(selectinload(Inquiry.messages)).where(Inquiry.id == inquiry_id)
+        select(Inquiry)
+        .options(selectinload(Inquiry.messages), selectinload(Inquiry.employee))
+        .where(Inquiry.id == inquiry_id)
     )
     return result.scalar_one_or_none()
 
@@ -208,7 +218,7 @@ async def get_inquiry_by_id(session: AsyncSession, inquiry_id: int):
     )
     return result.scalar_one_or_none()
 
-async def create_inquiry(session, tab_no: str, inquiry_head: str, inquiry_body: str):
+async def create_inquiry(session, tab_no: str, subdivision_id: int, inquiry_head: str, inquiry_body: str):
     result = await session.execute(
         select(Employee).where(Employee.tab_no == tab_no)
     )
@@ -220,7 +230,8 @@ async def create_inquiry(session, tab_no: str, inquiry_head: str, inquiry_body: 
     new_inquiry = Inquiry(
         employee_id=employee.id,
         subject=inquiry_head,
-        status='open'
+        status='open',
+        subdivision_id=subdivision_id
     )
     session.add(new_inquiry)
     await session.flush()
@@ -233,6 +244,8 @@ async def create_inquiry(session, tab_no: str, inquiry_head: str, inquiry_body: 
     session.add(new_message)
 
     await session.commit()
+    await session.refresh(new_inquiry, attribute_names=['messages', 'employee'])
+
     return new_inquiry
 
 async def delete_inquiry_by_id(session, inquiry_id: int):
@@ -311,8 +324,21 @@ async def upsert_inquiry_message_mapping(
     inquiry_message_mapping = InquiryMessageMapping(
         inquiry_id=inquiry_id,
         message_id=message_id,
-        subdivision_thread_id=message_thread_id
+        message_thread_id=message_thread_id
     )
 
     await session.merge(inquiry_message_mapping)
     await session.commit()
+
+async def get_inquiry_message_mapping(session: AsyncSession, inquiry_id: int):
+    result = await session.execute(
+        select(InquiryMessageMapping).where(InquiryMessageMapping.inquiry_id == inquiry_id)
+    )
+    return result.scalar_one_or_none()
+
+async def get_service_sub_id(session, name: str):
+    result = await session.execute(
+        select(Subdivision.id)
+        .where(Subdivision.name == name)
+    )
+    return result.scalar()

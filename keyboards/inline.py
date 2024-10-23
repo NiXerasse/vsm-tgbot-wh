@@ -87,3 +87,8 @@ def get_delete_back_button_keyboard(inquiry_id, _):
     keyboard.add(InlineKeyboardButton(text=_('Delete'), callback_data=f'delete_inquiry_{inquiry_id}'))
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(2).as_markup()
+
+def get_inquiry_answer_keyboard(inquiry_id, _):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Answer'), url=f'https://t.me/vsminfo_dev_bot?start=answer_{inquiry_id}'))
+    return keyboard.adjust(1).as_markup()

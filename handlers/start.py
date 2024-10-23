@@ -24,7 +24,7 @@ vsm_logo = InputMediaPhoto(media=vsm_logo_uri)
 @start_router.message(Command('get_my_id'))
 async def get_my_id(message: Message):
     logger.warning('get_my_id')
-    await message.answer(text=f'user_id = {message.from_user.id}\nchat_id={message.chat.id}')
+    await message.answer(text=f'user_id = {message.from_user.id}\nchat_id={message.chat.id}\nmessage_thread_id={message.message_thread_id}\n')
 
 @start_router.message(F.photo)
 async def get_photo_id(message: types.Message):
