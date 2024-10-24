@@ -1,3 +1,4 @@
+import pprint
 from datetime import datetime, timedelta
 
 import gspread
@@ -42,7 +43,6 @@ def read_google_sheets_data():
     for file in files:
         if file['name'].startswith('.'):
             continue
-
 
         subdivision = file['name']
         data_records = {}

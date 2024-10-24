@@ -4,33 +4,31 @@ from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import StateFilter, CommandStart
 from aiogram.utils.formatting import Bold, Text
 from babel.dates import get_month_names
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped
 
 from database.models import Inquiry
 from database.orm import get_employee, get_wh_statistics, get_inquiries_by_employee_tab_no, create_inquiry, \
     get_inquiry_with_messages_by_id, get_inquiry_by_id, delete_inquiry_by_id, add_message_to_inquiry, \
     get_subdivisions_by_employee_tab_no, get_message_thread_by_subdivision_id, upsert_inquiry_message_mapping, \
     get_inquiry_message_mapping
+from handlers.authorised_start import authorised_start
 from handlers.fsm_states import Authorised, Unauthorised
-from handlers.utils import update_start_message, vsm_logo_uri, update_callback_query_data, admin_group_id
+from handlers.utils import update_start_message, vsm_logo_uri, update_callback_query_data, admin_group_id, \
+    format_inquiry
 from keyboards.inline import get_main_keyboard, get_start_keyboard, get_wh_info_keyboard, get_inquiry_menu_keyboard, \
-    get_back_button_keyboard, get_save_back_button_keyboard, get_send_back_button_keyboard, \
+    get_back_button_keyboard, get_send_back_button_keyboard, \
     get_write_delete_back_button_keyboard, get_delete_back_button_keyboard, get_inquiry_answer_keyboard
 from locales.locales import gettext
-from logger.logger import logger
 
 employee_router = Router()
 
 @employee_router.message(StateFilter(Authorised), CommandStart())
-async def cmd_start(message: Message, state: FSMContext, session, _):
-    logger.warning('/start invoked')
-
+async def employee_cmd_start(message: Message, state: FSMContext, session, _):
     fsm_data = await state.get_data()
     tab_no = fsm_data.get('tab_no')
     employee = await get_employee(session, tab_no)
@@ -62,6 +60,7 @@ async def cmd_start(message: Message, state: FSMContext, session, _):
 @employee_router.callback_query(StateFilter(Authorised.start_menu), (F.data == 'log_out_button'))
 async def log_out(callback_query: CallbackQuery, state: FSMContext, _):
     await update_start_message(callback_query.message, state, '', get_start_keyboard(_))
+    await state.update_data({'is_admin': False})
     await state.set_state(Unauthorised.start_menu)
 
 @employee_router.callback_query(
@@ -87,7 +86,7 @@ async def back(callback_query: CallbackQuery, state: FSMContext, session, _):
     elif state_str == 'Authorised:entered_inquiry_body':
         await enter_inquiry_body(callback_query.message, state, _)
     else:
-        await cmd_start(message, state, session, _)
+        await authorised_start(message, state, session, _)
 
 @employee_router.callback_query(StateFilter(Authorised.start_menu), (F.data == 'get_wh_info'))
 async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session, _):
@@ -148,25 +147,6 @@ async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session
         )
     await update_start_message(callback_query.message, state, inquiries_message.as_markdown(), get_inquiry_menu_keyboard(inquiries, _))
     await state.set_state(Authorised.inquiry_menu)
-
-def format_inquiry(inquiry, _):
-    inquiry_message = Text(
-        '🚹 ', Bold(inquiry.employee.full_name), '\n',
-        '🚹 ', Bold(inquiry.employee.tab_no), '\n',
-        '\n'
-    )
-
-    inquiry_message += Text(
-        '✅ ', Bold(_('Topic'), ': ', inquiry.subject), '\n',
-    )
-
-    for msg in inquiry.messages:
-        inquiry_message += Text(
-            '🚹 ', Bold(_('Date'), ': ', msg.sent_at.strftime('%d-%m-%y %H:%M')), '\n'
-            ' 🔘 ', msg.content, '\n\n'
-        )
-
-    return inquiry_message
 
 @employee_router.callback_query(StateFilter(Authorised.inquiry_menu), (F.data.startswith('inquiry_menu_')))
 async def show_inquiry(callback_query: CallbackQuery, state: FSMContext, session, _):
@@ -239,7 +219,7 @@ async def send_message(callback_query: CallbackQuery, state, session, _):
     await show_inquiry(new_callback_query, state, session, _)
 
 @employee_router.callback_query(StateFilter(Authorised.inquiry_menu), (F.data == 'write_inquiry'))
-async def enter_inquiry_head(callback_query: CallbackQuery, state: FSMContext, session, _):
+async def enter_inquiry_head(callback_query: CallbackQuery, state: FSMContext, _):
     enter_inquiry_head_message = Text(
         Bold('🚹 ', _('Enter a topic for your inquiry.')),
         '\n\n',
@@ -267,7 +247,7 @@ async def enter_inquiry_body(message: Message, state: FSMContext, _):
     await state.set_state(Authorised.entering_inquiry_body)
 
 @employee_router.message(Authorised.entering_inquiry_body)
-async def process_inquiry_body(message: Message, state: FSMContext, session, _):
+async def process_inquiry_body(message: Message, state: FSMContext, _):
     fsm_data = await state.get_data()
     await state.update_data({'inquiry_body_msg_id': message.message_id, 'inquiry_body': message.text})
     inquiry_text_message = Text(

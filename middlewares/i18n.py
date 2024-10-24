@@ -19,6 +19,10 @@ class I18nMiddleware(BaseMiddleware):
         preferred_user_language = None
         if isinstance(event, Message) or isinstance(event, CallbackQuery):
             preferred_user_language = event.from_user.language_code
-        user_locale = (await state.get_data()).get('locale') or preferred_user_language
+        user_locale = (await state.get_data()).get('locale')
+        if not user_locale:
+            user_locale = preferred_user_language
+            await state.update_data({'locale': preferred_user_language})
+
         data['_'] = gettext.get(user_locale, gettext['en'])
         return await handler(event, data)

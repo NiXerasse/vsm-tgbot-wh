@@ -16,12 +16,13 @@ from database.db_gsheets_updater import sync_db_and_gsheets_loop
 
 from handlers.start import start_router
 from handlers.admin_group import admin_group_router
+from handlers.admin import admin_router
 
 bot = Bot(token=os.getenv('BOT_TOKEN'))
 storage = PostgresFSMStorage(session_maker)
 dp = Dispatcher(storage=storage)
 
-dp.include_routers(start_router, admin_group_router)
+dp.include_routers(admin_router, start_router, admin_group_router)
 
 async def on_startup():
     ...

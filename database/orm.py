@@ -1,16 +1,20 @@
+import json
+import os
 import random
 from datetime import datetime
 
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_, func, insert
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from database.engine import session_maker
 from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread, \
-    InquiryMessageMapping, SubdivisionGSheet
+    InquiryMessageMapping, SubdivisionGSheet, EmployeeAdmin
 from logger.logger import logger
 
+admin_subdivision = os.getenv('ADMIN_SUBDIVISION')
 
 def generate_pass():
     length = 6
@@ -118,6 +122,35 @@ async def add_time_records(
     if to_log:
         logger.info(f'Changed time records: \n{to_log}')
 
+async def upsert_employee_admin(session: AsyncSession, employee: Employee):
+    stmt = pg_insert(EmployeeAdmin).values(employee_id=employee.id)
+    stmt = stmt.on_conflict_do_nothing(index_elements=['employee_id'])
+
+    await session.execute(stmt)
+    await session.commit()
+
+async def get_employees_by_tab_no(session: AsyncSession, tab_no_list: list[str]):
+    result = await session.execute(
+        select(Employee).where(Employee.tab_no.in_(tab_no_list))
+    )
+    return result.scalars().all()
+
+async def get_employee_by_id(session: AsyncSession, employee_id: int):
+    result = await session.execute(
+        select(Employee).where(Employee.id == employee_id)
+    )
+    return result.scalar_one_or_none()
+
+async def delete_user_with_tab_no(session: AsyncSession, tab_no):
+    users = (await session.execute(
+        select(User)
+    )).scalars().all()
+    for user in users:
+        user_tab_no = user.fsm_data.get('tab_no', '')
+        if user_tab_no == tab_no:
+            await session.delete(user)
+            await session.commit()
+
 async def update_db(data):
     logger.info('Starting updating db from google sheets data')
     async with session_maker() as session:
@@ -130,6 +163,20 @@ async def update_db(data):
 
                 if employee:
                     await add_time_records(session, employee, subdivision, record['dates'])
+
+            if subdivision_name == admin_subdivision:
+                ... # sync db records with data[subdivision_name]
+                tab_nos = list(data[subdivision_name]['data_records'].keys())
+                employees = await get_employees_by_tab_no(session, tab_nos)
+                for employee in employees:
+                    await upsert_employee_admin(session, employee)
+
+                for admin in await get_admins(session):
+                    tab_no = (await get_employee_by_id(session, admin.employee_id)).tab_no
+                    if tab_no not in tab_nos:
+                        await delete_user_with_tab_no(session, tab_no)
+                        await session.delete(admin)
+                        await session.commit()
 
     logger.info('Ended updating db from google sheets data')
 
@@ -284,6 +331,28 @@ async def add_message_to_inquiry(session, inquiry_id: int, message_text: str):
 
     await session.commit()
 
+async def add_answer_to_inquiry(session: AsyncSession, inquiry_id: int, employee_id: int, answer: str):
+    result = await session.execute(
+        select(Inquiry).where(Inquiry.id == inquiry_id)
+    )
+    inquiry = result.scalar_one_or_none()
+
+    if inquiry is None:
+        raise ValueError(f"Inquiry with id {inquiry_id} not found")
+
+    new_message = Message(
+        inquiry_id=inquiry_id,
+        employee_id=employee_id,
+        content=answer
+    )
+
+    session.add(new_message)
+
+    inquiry.status = 'closed'
+    session.add(inquiry)
+
+    await session.commit()
+
 async def get_subdivisions(session):
     result = await session.execute(
         select(Subdivision)
@@ -354,3 +423,16 @@ async def get_user_data(session: AsyncSession, user_id: int):
         )
     )
     return result.scalar_one_or_none()
+
+async def get_admins(session: AsyncSession):
+    result = await session.execute(
+        select(EmployeeAdmin)
+    )
+    return result.scalars().all()
+
+async def is_employee_admin(session: AsyncSession, employee_id: int):
+    result = (await session.execute(
+        select(EmployeeAdmin)
+        .where(EmployeeAdmin.employee_id == employee_id)
+    )).scalar_one_or_none()
+    return result is not None

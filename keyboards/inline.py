@@ -2,6 +2,8 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from handlers.utils import admin_group_id
+
 
 class MenuCallBack(CallbackData, prefix='btn'):
     stage: str
@@ -93,3 +95,10 @@ def get_inquiry_answer_keyboard(inquiry_id, _):
     keyboard.add(InlineKeyboardButton(text=_('Send to bot for answer'), callback_data=f'answer_{inquiry_id}'))
     keyboard.add(InlineKeyboardButton(text=_('Go to bot'), url='https://t.me/vsminfo_dev_bot'))
     return keyboard.adjust(2).as_markup()
+
+async def get_main_admin_keyboard(bot, _):
+    keyboard = InlineKeyboardBuilder()
+    admin_group_invite_link = (await bot.get_chat(admin_group_id)).invite_link
+    keyboard.add(InlineKeyboardButton(text=_('Inquiries'), url=admin_group_invite_link))
+    keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))
+    return keyboard.adjust(1, 1).as_markup()

@@ -134,3 +134,14 @@ class InquiryMessageMapping(Base):
     inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), primary_key=True)
     message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     message_thread_id: Mapped[int] = mapped_column(ForeignKey('subdivision_message_thread.message_thread_id'), nullable=False)
+
+class EmployeeAdmin(Base):
+    __tablename__ = 'employee_admin'
+
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), primary_key=True)
+
+    employee: Mapped["Employee"] = relationship('Employee')
+
+    __table_args__ = (
+        UniqueConstraint('employee_id', name='uq_employee_admin'),
+    )

@@ -21,6 +21,7 @@ class Authorised(StatesGroup):
     deleting_inquiry_last_chance = State()
     adding_message = State()
     sending_message = State()
+    answering_inquiry = State()
     entering_inquiry_head = State()
     entered_inquiry_head = State()
     entering_inquiry_body = State()

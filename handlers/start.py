@@ -1,17 +1,17 @@
 from aiogram import Router, F, types
-from aiogram.filters import CommandStart, StateFilter, Command, CommandObject
+from aiogram.filters import CommandStart, StateFilter, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto
 from aiogram.utils.formatting import Text, Bold
 from aiogram.exceptions import TelegramNotFound
 
-from database.orm import get_employee_by_pin, get_employee, format_tab_no
+from database.orm import get_employee_by_pin, get_employee, format_tab_no, is_employee_admin
+from handlers.authorised_start import authorised_start
 from handlers.employee import employee_router
 from handlers.fsm_states import Unauthorised, Authorised
 from handlers.utils import vsm_logo_uri, update_start_message
 from keyboards.inline import get_start_keyboard, get_language_selection_keyboard, get_back_button_keyboard, \
-    get_got_it_back_button_keyboard, get_save_back_button_keyboard, get_change_login_back_button_keyboard, \
-    get_main_keyboard
+    get_got_it_back_button_keyboard, get_save_back_button_keyboard, get_change_login_back_button_keyboard
 from locales.locales import gettext
 from logger.logger import logger
 
@@ -208,6 +208,7 @@ async def process_login(message: Message, state: FSMContext, session, _):
         '✅ ', Bold(_('Username'), ': ', tab_no), '\n',
         '🔘 ', _('Please enter your password'), ' ⤵️'
     )
+
     await update_start_message(message, state, enter_password_message.as_markdown(), get_back_button_keyboard(_))
     await state.update_data({'login_tab_no': tab_no})
     await state.set_state(Unauthorised.entering_password)
@@ -228,11 +229,17 @@ async def process_password(message: Message, state: FSMContext, session, _):
         await state.set_state(Unauthorised.entering_password)
         return
 
-    welcome_message = Text(
-        '✅ ', Bold(_('Welcome'), ', ', ), '\n',
-        Bold('✅ ', employee.full_name),
-    )
-    await update_start_message(message, state, welcome_message.as_markdown(), get_main_keyboard(_))
+    # welcome_message = Text(
+    #     '✅ ', Bold(_('Welcome'), ', ', ), '\n',
+    #     Bold('✅ ', employee.full_name),
+    # )
 
-    await state.update_data({'tab_no': tab_no})
+    # await update_start_message(message, state, welcome_message.as_markdown(), get_main_keyboard(_))
+
+    if await is_employee_admin(session, employee.id):
+        await state.update_data({'tab_no': tab_no, 'is_admin': True})
+    else:
+        await state.update_data({'tab_no': tab_no, 'is_admin': False})
     await state.set_state(Authorised.start_menu)
+
+    await authorised_start(message, state, session, _)
