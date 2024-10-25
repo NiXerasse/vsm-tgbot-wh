@@ -7,12 +7,12 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.formatting import Text, Bold
 
 from database.orm import add_answer_to_inquiry, get_employee, \
-    get_inquiry_with_messages_by_id, get_message_thread_by_subdivision_id, get_service_sub_id
+    get_inquiry_with_messages_by_id
 from filters.is_admin import IsAdmin
 from handlers.authorised_start import authorised_start
 from handlers.fsm_states import Authorised
-from handlers.utils import update_start_message, admin_group_id, format_inquiry, vsm_logo_uri
-from keyboards.inline import get_back_button_keyboard, get_inquiry_answer_keyboard, get_main_admin_keyboard
+from handlers.utils import update_start_message, format_inquiry, vsm_logo_uri, move_inquiry_to_archive
+from keyboards.inline import get_back_button_keyboard, get_main_admin_keyboard
 
 admin_router = Router()
 
@@ -56,6 +56,7 @@ async def admin_start(message: Message, state: FSMContext, session, _):
 async def back_button(callback_query: CallbackQuery, state: FSMContext, session, _):
     await authorised_start(callback_query.message, state, session, _)
 
+
 @admin_router.message(StateFilter(Authorised.answering_inquiry))
 async def commit_answer_to_inquiry(message: Message, state: FSMContext, session, _):
     await message.delete()
@@ -63,26 +64,9 @@ async def commit_answer_to_inquiry(message: Message, state: FSMContext, session,
     fsm_data = await state.get_data()
     inquiry_being_answered_id = fsm_data.get('inquiry_being_answered_id')
     employee = await get_employee(session, fsm_data.get('tab_no'))
+
     await add_answer_to_inquiry(session, inquiry_being_answered_id, employee.id, message.text)
     answered_inquiry = await get_inquiry_with_messages_by_id(session, inquiry_being_answered_id)
+    await move_inquiry_to_archive(session, message.bot, answered_inquiry)
 
     await update_start_message(message, state, format_inquiry(answered_inquiry, _).as_markdown(), get_back_button_keyboard(_))
-    await message.bot.edit_message_text(
-        chat_id=admin_group_id,
-        message_id=fsm_data.get('message_being_answered_id'),
-        text=(format_inquiry(await get_inquiry_with_messages_by_id(session, inquiry_being_answered_id), _).as_markdown()),
-        parse_mode=ParseMode.MARKDOWN_V2,
-    )
-    arc_message = await message.bot.copy_message(
-        chat_id=admin_group_id,
-        from_chat_id=admin_group_id,
-        message_id=fsm_data.get('message_being_answered_id'),
-        message_thread_id=await get_message_thread_by_subdivision_id(session, (await get_service_sub_id(session, '.archive')))
-    )
-    await arc_message.edit_text(
-        reply_markup=get_inquiry_answer_keyboard(inquiry_being_answered_id, _),
-    )
-    await message.bot.delete_message(
-        chat_id=admin_group_id,
-        message_id=fsm_data.get('message_being_answered_id'),
-    )

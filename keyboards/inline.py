@@ -2,7 +2,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from handlers.utils import admin_group_id
+
 
 
 class MenuCallBack(CallbackData, prefix='btn'):
@@ -44,10 +44,13 @@ def get_change_login_back_button_keyboard(_):
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(2).as_markup()
 
-def get_main_keyboard(_):
+def get_main_keyboard(has_answered_inquiries, _):
     keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text=_('Get worked hours info'), callback_data='get_wh_info'))
-    keyboard.add(InlineKeyboardButton(text=_('Inquiries'), callback_data='inquiry_menu'))
+    inquiries_item = _('Inquiries')
+    if has_answered_inquiries:
+        inquiries_item += ' (*)'
+    keyboard.add(InlineKeyboardButton(text=inquiries_item, callback_data='inquiry_menu'))
     keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))
     return keyboard.adjust(1, 1).as_markup()
 
@@ -98,6 +101,7 @@ def get_inquiry_answer_keyboard(inquiry_id, _):
 
 async def get_main_admin_keyboard(bot, _):
     keyboard = InlineKeyboardBuilder()
+    from handlers.utils import admin_group_id
     admin_group_invite_link = (await bot.get_chat(admin_group_id)).invite_link
     keyboard.add(InlineKeyboardButton(text=_('Inquiries'), url=admin_group_invite_link))
     keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))

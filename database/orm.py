@@ -1,9 +1,8 @@
-import json
 import os
 import random
 from datetime import datetime
 
-from sqlalchemy import select, and_, func, insert
+from sqlalchemy import select, and_, func, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -348,7 +347,7 @@ async def add_answer_to_inquiry(session: AsyncSession, inquiry_id: int, employee
 
     session.add(new_message)
 
-    inquiry.status = 'closed'
+    inquiry.status = 'answered'
     session.add(inquiry)
 
     await session.commit()
@@ -436,3 +435,37 @@ async def is_employee_admin(session: AsyncSession, employee_id: int):
         .where(EmployeeAdmin.employee_id == employee_id)
     )).scalar_one_or_none()
     return result is not None
+
+async def update_inquiry_status(session, inquiry_id, new_status):
+    inquiry = await get_inquiry_by_id(session, inquiry_id)
+    inquiry.status = new_status
+    await session.commit()
+    return inquiry
+
+async def has_answered_inquiries(session: AsyncSession, employee_id: int) -> bool:
+    result = await session.execute(
+        select(Inquiry)
+        .where(Inquiry.employee_id == employee_id, Inquiry.status == 'answered')
+        .limit(1)
+    )
+    return result.scalar() is not None
+
+async def has_non_initiator_messages(session: AsyncSession, inquiry_id: int) -> bool:
+    stmt = (
+        select(Message)
+        .join(Inquiry, (Inquiry.id == inquiry_id) & (Inquiry.employee_id != Message.employee_id))
+    )
+    result = await session.execute(stmt)
+    non_initiator_messages = result.scalars().first()
+
+    return non_initiator_messages is not None
+
+
+async def set_inquiry_status(session: AsyncSession, inquiry_id: int, new_status: str) -> None:
+    stmt = (
+        update(Inquiry)
+        .where(Inquiry.id == inquiry_id)
+        .values(status=new_status)
+    )
+    await session.execute(stmt)
+    await session.commit()

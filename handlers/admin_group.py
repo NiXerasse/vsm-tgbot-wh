@@ -2,18 +2,17 @@ from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.base import StorageKey
 from aiogram.types import Message, InlineKeyboardButton, CallbackQuery
 from aiogram.filters import Command
 from aiogram.utils.formatting import Text, Bold
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database.orm import get_subdivisions, upsert_subdivision_message_thread, get_user_data, get_inquiry_by_id, \
-    get_inquiry_with_messages_by_id
+from database.orm import get_subdivisions, upsert_subdivision_message_thread, get_inquiry_with_messages_by_id
 from filters.chat_type_filter import ChatTypeFilter
+from filters.is_admin import IsAdmin
 from handlers.employee import format_inquiry
 from handlers.fsm_states import Authorised
-from handlers.utils import update_start_message, vsm_logo_uri
+from handlers.utils import vsm_logo_uri
 from keyboards.inline import get_back_button_keyboard
 from locales.locales import gettext
 from logger.logger import logger
@@ -49,7 +48,10 @@ async def register_message_thread_id(callback_query: CallbackQuery, session):
     await callback_query.message.delete()
     await callback_query.answer(text='Успешно зарегистрировано!', show_alert=True)
 
-@admin_group_router.callback_query(ChatTypeFilter(chat_type=['group', 'supergroup']), (F.data.startswith('answer_')))
+@admin_group_router.callback_query(
+    IsAdmin(),
+    ChatTypeFilter(chat_type=['group', 'supergroup']),
+    (F.data.startswith('answer_')))
 async def answering_inquiry(callback_query: CallbackQuery, user_state: FSMContext, session):
     user_id = callback_query.from_user.id
 

@@ -4,7 +4,7 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
-from aiogram.types import TelegramObject, Message, CallbackQuery
+from aiogram.types import TelegramObject
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from database.orm import add_user

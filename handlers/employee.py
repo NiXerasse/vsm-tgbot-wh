@@ -15,11 +15,12 @@ from database.models import Inquiry
 from database.orm import get_employee, get_wh_statistics, get_inquiries_by_employee_tab_no, create_inquiry, \
     get_inquiry_with_messages_by_id, get_inquiry_by_id, delete_inquiry_by_id, add_message_to_inquiry, \
     get_subdivisions_by_employee_tab_no, get_message_thread_by_subdivision_id, upsert_inquiry_message_mapping, \
-    get_inquiry_message_mapping
+    get_inquiry_message_mapping, has_answered_inquiries, update_inquiry_status, has_non_initiator_messages, \
+    set_inquiry_status
 from handlers.authorised_start import authorised_start
 from handlers.fsm_states import Authorised, Unauthorised
 from handlers.utils import update_start_message, vsm_logo_uri, update_callback_query_data, admin_group_id, \
-    format_inquiry
+    format_inquiry, move_inquiry_from_archive, delete_inquiry_from_admin_group, move_inquiry_to_archive
 from keyboards.inline import get_main_keyboard, get_start_keyboard, get_wh_info_keyboard, get_inquiry_menu_keyboard, \
     get_back_button_keyboard, get_send_back_button_keyboard, \
     get_write_delete_back_button_keyboard, get_delete_back_button_keyboard, get_inquiry_answer_keyboard
@@ -39,6 +40,8 @@ async def employee_cmd_start(message: Message, state: FSMContext, session, _):
         '\u200B',
     )
 
+    has_answers = await has_answered_inquiries(session, employee.id)
+
     if message.text == '/start':
         await message.delete()
 
@@ -49,11 +52,16 @@ async def employee_cmd_start(message: Message, state: FSMContext, session, _):
             except TelegramBadRequest:
                 ...
 
-        start_msg = await message.answer_photo(photo=vsm_logo_uri, caption=welcome_message.as_markdown(), reply_markup=get_main_keyboard(_), parse_mode=ParseMode.MARKDOWN)
+        start_msg = await message.answer_photo(
+            photo=vsm_logo_uri,
+            caption=welcome_message.as_markdown(),
+            reply_markup=get_main_keyboard(has_answers, _),
+            parse_mode=ParseMode.MARKDOWN_V2
+        )
         await state.update_data({'start_msg_id': start_msg.message_id})
 
     else:
-        await update_start_message(message, state, welcome_message.as_markdown(), get_main_keyboard(_))
+        await update_start_message(message, state, welcome_message.as_markdown(), get_main_keyboard(has_answers, _))
 
     await state.set_state(Authorised.start_menu)
 
@@ -128,6 +136,8 @@ async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session,
 async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session, _):
     tab_no = (await state.get_data()).get('tab_no')
     inquiries = await get_inquiries_by_employee_tab_no(session, tab_no)
+    inquiries = [inquiry for inquiry in inquiries if inquiry.status  != 'hidden']
+
     inquiries_message = Text()
     if not inquiries:
         inquiries_message = Text(
@@ -138,8 +148,9 @@ async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session
     else:
         inquiries_message += Text('🚹 ', Bold(_('Your inquiries'), ': '), '\n\n')
         for i, inquiry in enumerate(inquiries, start=1):
+            bullet = ' 🟢 ' if inquiry.status == 'answered' else ' 🔘 '
             inquiries_message += Text(
-                ' 🔘 ', f'{i}. ', Bold(inquiry.subject), '\n',
+                bullet, f'{i}. ', Bold(inquiry.subject), '\n',
             )
         inquiries_message += Text(
             '\n\n',
@@ -156,6 +167,7 @@ async def show_inquiry(callback_query: CallbackQuery, state: FSMContext, session
         callback_query.message, state, format_inquiry(inquiry, _).as_markdown(),
         get_write_delete_back_button_keyboard(inquiry_id, _))
     await state.set_state(Authorised.viewing_inquiry)
+    await update_inquiry_status(session, inquiry_id, 'answered_and_read')
 
 @employee_router.callback_query(StateFilter(Authorised.viewing_inquiry), (F.data.startswith('delete_inquiry_')))
 async def delete_inquiry(callback_query: CallbackQuery, state, session, _):
@@ -173,7 +185,12 @@ async def delete_inquiry(callback_query: CallbackQuery, state, session, _):
 @employee_router.callback_query(StateFilter(Authorised.deleting_inquiry_last_chance), (F.data.startswith('delete_inquiry_')))
 async def do_delete_inquiry(callback_query: CallbackQuery, state, session, _):
     inquiry_id = int(callback_query.data.split('_')[-1])
-    await delete_inquiry_by_id(session, inquiry_id)
+    if await has_non_initiator_messages(session, inquiry_id):
+        await set_inquiry_status(session, inquiry_id, 'hidden')
+        # await move_inquiry_to_archive(session, callback_query.bot, inquiry_id)
+    else:
+        await delete_inquiry_by_id(session, inquiry_id)
+        await delete_inquiry_from_admin_group(session, callback_query.bot, inquiry_id)
     new_callback_query = update_callback_query_data(callback_query, 'inquiry_menu')
     await inquiry_menu(new_callback_query, state, session, _)
 
@@ -192,7 +209,7 @@ async def write_message_text(callback_query: CallbackQuery, state, session, _):
     await state.set_state(Authorised.adding_message)
 
 @employee_router.message(Authorised.adding_message)
-async def add_message(message: Message, state: FSMContext, session, _):
+async def adding_message_to_inquiry(message: Message, state: FSMContext, session, _):
     fsm_data = await state.get_data()
     inquiry_id = fsm_data['inquiry_id']
     inquiry = await get_inquiry_by_id(session, inquiry_id)
@@ -209,11 +226,14 @@ async def add_message(message: Message, state: FSMContext, session, _):
     await state.set_state(Authorised.sending_message)
 
 @employee_router.callback_query(StateFilter(Authorised.sending_message), (F.data == 'send_button'))
-async def send_message(callback_query: CallbackQuery, state, session, _):
+async def send_inquiry_with_new_message(callback_query: CallbackQuery, state, session, _):
     fsm_data = await state.get_data()
     inquiry_id = fsm_data['inquiry_id']
     message_text = fsm_data['being_added_message']
     await add_message_to_inquiry(session, inquiry_id, message_text)
+    # TODO Move inquiry telegram message to appropriate message_thread
+    await move_inquiry_from_archive(
+        session, callback_query.bot, (await get_inquiry_with_messages_by_id(session, inquiry_id)))
 
     new_callback_query = update_callback_query_data(callback_query, f'inquiry_menu_{inquiry_id}')
     await show_inquiry(new_callback_query, state, session, _)
