@@ -4,15 +4,14 @@ import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-
 from aiogram import Bot, Dispatcher
 from middlewares.i18n import I18nMiddleware
 from middlewares.session import DataBaseSession
 
-
 from database.engine import create_db, session_maker
 from database.fsm_storage import PostgresFSMStorage
 from database.db_gsheets_updater import sync_db_and_gsheets_loop
+from database.update_tg_group_messages import update_tg_group_messages_loop
 
 from handlers.start import start_router
 from handlers.admin_group import admin_group_router
@@ -34,6 +33,12 @@ async def main():
     await create_db()
 
     asyncio.create_task(sync_db_and_gsheets_loop(60))
+    asyncio.create_task(update_tg_group_messages_loop(
+        interval=3600,
+        session=session_maker(),
+        bot=bot,
+        hours_older_than=44)
+    )
 
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)

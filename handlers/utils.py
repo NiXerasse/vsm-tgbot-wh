@@ -6,9 +6,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto, CallbackQuery
 from aiogram import types
 from aiogram.utils.formatting import Text, Bold
+from sqlalchemy.util import await_only
 
 from database.orm import get_inquiry_message_mapping, upsert_inquiry_message_mapping, \
-    get_message_thread_by_subdivision_id, get_service_sub_id
+    get_message_thread_by_subdivision_id, get_service_sub_id, get_inquiry_with_messages_by_id, get_inquiry_by_id
 from keyboards.inline import get_inquiry_answer_keyboard
 from locales.locales import gettext
 from logger.logger import logger
@@ -46,6 +47,7 @@ def format_inquiry(inquiry, _ = gettext['ru']):
     inquiry_message = Text(
         Bold(inquiry.employee.full_name), '\n',
         Bold(inquiry.employee.tab_no), '\n',
+        Bold(_('SD'), ' "', inquiry.subdivision.name, '"', '\n\n')
     )
 
     initiator = inquiry.employee_id
@@ -64,39 +66,38 @@ def format_inquiry(inquiry, _ = gettext['ru']):
 
     return inquiry_message
 
-async def move_inquiry_to_thread(session, bot, inquiry_with_messages, message_thread_id):
-    inq_mess_map = await get_inquiry_message_mapping(session, inquiry_with_messages.id)
-    await bot.edit_message_text(
-        chat_id=admin_group_id,
-        message_id=inq_mess_map.message_id,
-        text=format_inquiry(inquiry_with_messages).as_markdown(),
-        parse_mode=ParseMode.MARKDOWN_V2,
-    )
+async def move_inquiry_to_thread(session, bot, inquiry_id, message_thread_id):
+    inq_mess_map = await get_inquiry_message_mapping(session, inquiry_id)
+    if inq_mess_map.message_thread_id == message_thread_id:
+        return
+
     copied_message = await bot.copy_message(
         chat_id=admin_group_id,
         from_chat_id=admin_group_id,
         message_id=inq_mess_map.message_id,
         message_thread_id=message_thread_id,
+        reply_markup=get_inquiry_answer_keyboard(inquiry_id, gettext['ru'])
     )
-    await bot.edit_message_reply_markup(
-        chat_id=admin_group_id,
-        message_id=copied_message.message_id,
-        reply_markup=get_inquiry_answer_keyboard(inquiry_with_messages.id, gettext['ru']),
-    )
-    await bot.delete_message(
-        chat_id=admin_group_id,
-        message_id=inq_mess_map.message_id,
-    )
+
+    try:
+        await bot.delete_message(
+            chat_id=admin_group_id,
+            message_id=inq_mess_map.message_id,
+        )
+    except TelegramBadRequest:
+        logger.warning('Trying to delete old message...')
+
     await upsert_inquiry_message_mapping(session, inq_mess_map.inquiry_id, copied_message.message_id, message_thread_id)
 
-async def move_inquiry_to_archive(session, bot, inquiry_with_messages):
+async def move_inquiry_to_archive(session, bot, inquiry_id):
     message_thread_id = await get_message_thread_by_subdivision_id(
         session, (await get_service_sub_id(session, '.archive')))
-    await move_inquiry_to_thread(session, bot, inquiry_with_messages, message_thread_id)
+    await move_inquiry_to_thread(session, bot, inquiry_id, message_thread_id)
 
-async def move_inquiry_from_archive(session, bot, inquiry_with_messages):
-    message_thread_id = await get_message_thread_by_subdivision_id(session, inquiry_with_messages.subdivision_id)
-    await move_inquiry_to_thread(session, bot, inquiry_with_messages, message_thread_id)
+async def move_inquiry_from_archive(session, bot, inquiry_id):
+    inquiry = await get_inquiry_by_id(session, inquiry_id)
+    message_thread_id = await get_message_thread_by_subdivision_id(session, inquiry.subdivision_id)
+    await move_inquiry_to_thread(session, bot, inquiry_id, message_thread_id)
 
 async def delete_inquiry_from_admin_group(session, bot, inquiry_id):
     inq_mess_map = await get_inquiry_message_mapping(session, inquiry_id)
@@ -106,3 +107,14 @@ async def delete_inquiry_from_admin_group(session, bot, inquiry_id):
     )
     await session.delete(inq_mess_map)
     await session.commit()
+
+async def update_inquiry_tg_message(session, bot, inquiry_with_messages):
+    inq_mess_map = await get_inquiry_message_mapping(session, inquiry_with_messages.id)
+
+    return await bot.edit_message_text(
+        chat_id=admin_group_id,
+        message_id=inq_mess_map.message_id,
+        text=format_inquiry(inquiry_with_messages).as_markdown(),
+        parse_mode=ParseMode.MARKDOWN_V2,
+        reply_markup=get_inquiry_answer_keyboard(inquiry_with_messages.id, gettext['ru'])
+    )

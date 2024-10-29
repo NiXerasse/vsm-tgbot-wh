@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-24 11:51+0300\n"
+"POT-Creation-Date: 2024-10-29 11:16+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,59 +17,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: handlers/admin_group.py:61
-msgid "Write answer for inquiry presented below"
-msgstr ""
-
-#: handlers/admin_group.py:82
-msgid "The inquiry has been sent to bot for answering. Go to the bot."
-msgstr ""
-
-#: handlers/employee.py:39 handlers/start.py:232
+#: handlers/admin.py:36 handlers/employee.py:39
 msgid "Welcome"
 msgstr ""
 
-#: handlers/employee.py:112
-msgid "Data for"
+#: handlers/admin_group.py:63
+msgid "Write answer for inquiry presented below"
 msgstr ""
 
-#: handlers/employee.py:119
-msgid "Number of days worked"
+#: handlers/admin_group.py:88
+msgid "The inquiry has been sent to bot for answering. Go to the bot."
 msgstr ""
 
 #: handlers/employee.py:120
+msgid "Data for"
+msgstr ""
+
+#: handlers/employee.py:127
+msgid "Number of days worked"
+msgstr ""
+
+#: handlers/employee.py:128
 msgid "Accounted hours"
 msgstr ""
 
-#: handlers/employee.py:135
+#: handlers/employee.py:145
 msgid "Here you can write an inquiry regarding employment relations and workflow."
 msgstr ""
 
-#: handlers/employee.py:137
+#: handlers/employee.py:147
 msgid "You have no inquiries yet."
 msgstr ""
 
-#: handlers/employee.py:140
+#: handlers/employee.py:150
 msgid "Your inquiries"
 msgstr ""
 
-#: handlers/employee.py:147
+#: handlers/employee.py:158
 msgid "To work with inquiry press a button with corresponding number below"
 msgstr ""
 
-#: handlers/employee.py:160
-msgid "Topic"
-msgstr ""
-
-#: handlers/employee.py:165
-msgid "Date"
-msgstr ""
-
-#: handlers/employee.py:185
+#: handlers/employee.py:179
 msgid "The inquiry"
 msgstr ""
 
-#: handlers/employee.py:187
+#: handlers/employee.py:181
 msgid "will be deleted"
 msgstr ""
 
@@ -85,17 +77,17 @@ msgstr ""
 msgid "Content of the message"
 msgstr ""
 
-#: handlers/employee.py:244
+#: handlers/employee.py:248
 msgid "Enter a topic for your inquiry."
 msgstr ""
 
-#: handlers/employee.py:246
+#: handlers/employee.py:250
 msgid ""
 "It will be displayed in the list of requests, so it should be brief and "
 "meaningful."
 msgstr ""
 
-#: handlers/employee.py:262
+#: handlers/employee.py:266
 msgid "Enter the text for the inquiry with topic"
 msgstr ""
 
@@ -169,7 +161,7 @@ msgstr ""
 msgid "You've entered wrong username"
 msgstr ""
 
-#: handlers/start.py:200 handlers/start.py:225
+#: handlers/start.py:200 handlers/start.py:226
 msgid "Please try again"
 msgstr ""
 
@@ -177,73 +169,85 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: handlers/start.py:224
+#: handlers/start.py:225
 msgid "You've entered wrong password"
 msgstr ""
 
-#: keyboards/inline.py:12
-msgid "Login by PIN"
+#: handlers/utils.py:50
+msgid "SD"
+msgstr ""
+
+#: handlers/utils.py:56
+msgid "Topic"
+msgstr ""
+
+#: handlers/utils.py:63
+msgid "Date"
 msgstr ""
 
 #: keyboards/inline.py:13
+msgid "Login by PIN"
+msgstr ""
+
+#: keyboards/inline.py:14
 msgid "Login by username"
 msgstr ""
 
-#: keyboards/inline.py:24 keyboards/inline.py:30 keyboards/inline.py:36
-#: keyboards/inline.py:42 keyboards/inline.py:54 keyboards/inline.py:69
-#: keyboards/inline.py:75 keyboards/inline.py:82 keyboards/inline.py:88
+#: keyboards/inline.py:25 keyboards/inline.py:31 keyboards/inline.py:37
+#: keyboards/inline.py:43 keyboards/inline.py:58 keyboards/inline.py:73
+#: keyboards/inline.py:79 keyboards/inline.py:87 keyboards/inline.py:93
 msgid "Back"
 msgstr ""
 
-#: keyboards/inline.py:29
+#: keyboards/inline.py:30
 msgid "Got it"
 msgstr ""
 
-#: keyboards/inline.py:35
+#: keyboards/inline.py:36
 msgid "Save"
 msgstr ""
 
-#: keyboards/inline.py:41
+#: keyboards/inline.py:42
 msgid "Change username"
 msgstr ""
 
-#: keyboards/inline.py:47
+#: keyboards/inline.py:48
 msgid "Get worked hours info"
 msgstr ""
 
-#: keyboards/inline.py:48
+#: keyboards/inline.py:49 keyboards/inline.py:106
 msgid "Inquiries"
 msgstr ""
 
-#: keyboards/inline.py:49
+#: keyboards/inline.py:53 keyboards/inline.py:107
 msgid "Log out of your account"
 msgstr ""
 
-#: keyboards/inline.py:68
+#: keyboards/inline.py:72
 msgid "Write inquiry"
 msgstr ""
 
-#: keyboards/inline.py:74
+#: keyboards/inline.py:78
 msgid "Send"
 msgstr ""
 
-#: keyboards/inline.py:80
+#: keyboards/inline.py:85
 msgid "Add a message"
 msgstr ""
 
-#: keyboards/inline.py:81
+#: keyboards/inline.py:86
 msgid "Delete the entire inquiry"
 msgstr ""
 
-#: keyboards/inline.py:87
+#: keyboards/inline.py:92
 msgid "Delete"
 msgstr ""
 
-#: keyboards/inline.py:93
+#: keyboards/inline.py:98
 msgid "Send to bot for answer"
 msgstr ""
 
-#: keyboards/inline.py:94
+#: keyboards/inline.py:99
 msgid "Go to bot"
 msgstr ""
 

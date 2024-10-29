@@ -1,8 +1,7 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-
+from datetime import datetime as dt
 
 
 class MenuCallBack(CallbackData, prefix='btn'):
@@ -80,9 +79,10 @@ def get_send_back_button_keyboard(_):
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(2).as_markup()
 
-def get_write_delete_back_button_keyboard(inquiry_id, _):
+def get_write_delete_back_button_keyboard(inquiry_id, _, add_message_menu=True):
     keyboard = InlineKeyboardBuilder()
-    keyboard.add(InlineKeyboardButton(text=_('Add a message'), callback_data=f'add_message_{inquiry_id}'))
+    if add_message_menu:
+        keyboard.add(InlineKeyboardButton(text=_('Add a message'), callback_data=f'add_message_{inquiry_id}'))
     keyboard.add(InlineKeyboardButton(text=_('Delete the entire inquiry'), callback_data=f'delete_inquiry_{inquiry_id}'))
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
     return keyboard.adjust(1, 1, 1).as_markup()
@@ -95,7 +95,7 @@ def get_delete_back_button_keyboard(inquiry_id, _):
 
 def get_inquiry_answer_keyboard(inquiry_id, _):
     keyboard = InlineKeyboardBuilder()
-    keyboard.add(InlineKeyboardButton(text=_('Send to bot for answer'), callback_data=f'answer_{inquiry_id}'))
+    keyboard.add(InlineKeyboardButton(text=_('Send to bot for answer'), callback_data=f'answer_{inquiry_id}_{dt.now()}'))
     keyboard.add(InlineKeyboardButton(text=_('Go to bot'), url='https://t.me/vsminfo_dev_bot'))
     return keyboard.adjust(2).as_markup()
 

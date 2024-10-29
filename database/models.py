@@ -94,6 +94,7 @@ class Inquiry(Base):
 
     messages: Mapped[list["Message"]] = relationship('Message', back_populates='inquiry', cascade='all, delete')
     employee: Mapped["Employee"] = relationship('Employee')
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision')
 
     __table_args__ = (
         Index('idx_inquiry_employee_id', 'employee_id'),

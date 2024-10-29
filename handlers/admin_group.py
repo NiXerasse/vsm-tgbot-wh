@@ -57,7 +57,7 @@ async def answering_inquiry(callback_query: CallbackQuery, user_state: FSMContex
 
     fsm_data = await user_state.get_data()
     _ = gettext[fsm_data.get('locale')]
-    inquiry_id = int(callback_query.data.split('_')[-1])
+    inquiry_id = int(callback_query.data.split('_')[-2])
     inquiry = await get_inquiry_with_messages_by_id(session, inquiry_id)
     inquiry_answer_message = Text(
         Bold(_('Write answer for inquiry presented below')), ' ⤵️', '\n\n',

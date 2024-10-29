@@ -252,7 +252,11 @@ async def get_inquiries_by_employee_tab_no(session: AsyncSession, tab_no: str):
 async def get_inquiry_with_messages_by_id(session: AsyncSession, inquiry_id: int):
     result = await session.execute(
         select(Inquiry)
-        .options(selectinload(Inquiry.messages), selectinload(Inquiry.employee))
+        .options(
+            selectinload(Inquiry.messages),
+            selectinload(Inquiry.employee),
+            selectinload(Inquiry.subdivision)
+        )
         .where(Inquiry.id == inquiry_id)
     )
     return result.scalar_one_or_none()
@@ -290,7 +294,7 @@ async def create_inquiry(session, tab_no: str, subdivision_id: int, inquiry_head
     session.add(new_message)
 
     await session.commit()
-    await session.refresh(new_inquiry, attribute_names=['messages', 'employee'])
+    await session.refresh(new_inquiry, attribute_names=['messages', 'employee', 'subdivision'])
 
     return new_inquiry
 
@@ -308,7 +312,8 @@ async def delete_inquiry_by_id(session, inquiry_id: int):
 
 async def add_message_to_inquiry(session, inquiry_id: int, message_text: str):
     result = await session.execute(
-        select(Inquiry).where(Inquiry.id == inquiry_id)
+        select(Inquiry)
+        .where(Inquiry.id == inquiry_id)
     )
     inquiry = result.scalar_one_or_none()
 
@@ -332,7 +337,8 @@ async def add_message_to_inquiry(session, inquiry_id: int, message_text: str):
 
 async def add_answer_to_inquiry(session: AsyncSession, inquiry_id: int, employee_id: int, answer: str):
     result = await session.execute(
-        select(Inquiry).where(Inquiry.id == inquiry_id)
+        select(Inquiry)
+        .where(Inquiry.id == inquiry_id)
     )
     inquiry = result.scalar_one_or_none()
 
@@ -385,7 +391,6 @@ async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivisio
     )
 
     return result.scalar()
-
 
 async def upsert_inquiry_message_mapping(
         session: AsyncSession, inquiry_id: int, message_id: int, message_thread_id: int):
@@ -459,7 +464,6 @@ async def has_non_initiator_messages(session: AsyncSession, inquiry_id: int) -> 
     non_initiator_messages = result.scalars().first()
 
     return non_initiator_messages is not None
-
 
 async def set_inquiry_status(session: AsyncSession, inquiry_id: int, new_status: str) -> None:
     stmt = (
