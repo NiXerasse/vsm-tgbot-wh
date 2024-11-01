@@ -3,8 +3,8 @@ from datetime import timedelta
 
 from sqlalchemy import select, func, update
 
+from config.env import admin_group_id
 from database.models import InquiryMessageMapping, Subdivision, SubdivisionMessageThread, Inquiry
-from handlers.utils import admin_group_id
 from keyboards.inline import get_inquiry_answer_keyboard
 from locales.locales import gettext
 from logger.logger import logger

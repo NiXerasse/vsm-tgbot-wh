@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import gspread
 from gspread import Cell
 
+from config.env import read_file_postfix
 from database.engine import session_maker
 from database.models import Employee
 from database.orm import get_employee
@@ -41,7 +42,7 @@ def read_google_sheets_data():
 
     data = {}
     for file in files:
-        if file['name'].startswith('.'):
+        if file['name'].startswith('.') or not file['name'].endswith(read_file_postfix):
             continue
 
         subdivision = file['name']
@@ -94,7 +95,7 @@ async def update_google_sheets_data_async():
 
     async with session_maker() as session:
         for file in files:
-            if file['name'].startswith('.'):
+            if file['name'].startswith('.') or not file['name'].endswith(read_file_postfix):
                 continue
 
             subdivision = file['name']

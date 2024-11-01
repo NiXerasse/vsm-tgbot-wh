@@ -8,14 +8,12 @@ from aiogram import types
 from aiogram.utils.formatting import Text, Bold
 from sqlalchemy.util import await_only
 
+from config.env import vsm_logo_uri, admin_group_id
 from database.orm import get_inquiry_message_mapping, upsert_inquiry_message_mapping, \
     get_message_thread_by_subdivision_id, get_service_sub_id, get_inquiry_with_messages_by_id, get_inquiry_by_id
 from keyboards.inline import get_inquiry_answer_keyboard
 from locales.locales import gettext
 from logger.logger import logger
-
-vsm_logo_uri = os.getenv('LOGO_URI')
-admin_group_id = os.getenv('ADMIN_GROUP_ID')
 
 
 async def update_start_message(message: Message, state: FSMContext, caption: str, markup: types.InlineKeyboardMarkup | None):

@@ -6,13 +6,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.formatting import Text, Bold
 
+from config.env import vsm_logo_uri
 from database.orm import add_answer_to_inquiry, get_employee, \
     get_inquiry_with_messages_by_id
 from database.update_tg_group_messages import update_tg_group_messages
 from filters.is_admin import IsAdmin
 from handlers.authorised_start import authorised_start
 from handlers.fsm_states import Authorised
-from handlers.utils import update_start_message, format_inquiry, vsm_logo_uri, move_inquiry_to_archive, \
+from handlers.utils import update_start_message, format_inquiry, move_inquiry_to_archive, \
     update_inquiry_tg_message
 from keyboards.inline import get_back_button_keyboard, get_main_admin_keyboard
 from logger.logger import logger

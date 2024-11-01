@@ -5,11 +5,12 @@ from aiogram.types import Message, InputMediaPhoto
 from aiogram.utils.formatting import Text, Bold
 from aiogram.exceptions import TelegramNotFound
 
+from config.env import vsm_logo_uri
 from database.orm import get_employee_by_pin, get_employee, format_tab_no, is_employee_admin
 from handlers.authorised_start import authorised_start
 from handlers.employee import employee_router
 from handlers.fsm_states import Unauthorised, Authorised
-from handlers.utils import vsm_logo_uri, update_start_message
+from handlers.utils import update_start_message
 from keyboards.inline import get_start_keyboard, get_language_selection_keyboard, get_back_button_keyboard, \
     get_got_it_back_button_keyboard, get_save_back_button_keyboard, get_change_login_back_button_keyboard
 from locales.locales import gettext

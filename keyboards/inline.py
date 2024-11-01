@@ -3,6 +3,8 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from datetime import datetime as dt
 
+from config.env import admin_group_id, bot_http_link, group_command_postfix
+
 
 class MenuCallBack(CallbackData, prefix='btn'):
     stage: str
@@ -95,13 +97,12 @@ def get_delete_back_button_keyboard(inquiry_id, _):
 
 def get_inquiry_answer_keyboard(inquiry_id, _):
     keyboard = InlineKeyboardBuilder()
-    keyboard.add(InlineKeyboardButton(text=_('Send to bot for answer'), callback_data=f'answer_{inquiry_id}_{dt.now()}'))
-    keyboard.add(InlineKeyboardButton(text=_('Go to bot'), url='https://t.me/vsminfo_dev_bot'))
+    keyboard.add(InlineKeyboardButton(text=_('Send to bot for answer'), callback_data=f'answer_{group_command_postfix}_{inquiry_id}_{dt.now()}'))
+    keyboard.add(InlineKeyboardButton(text=_('Go to bot'), url=bot_http_link))
     return keyboard.adjust(2).as_markup()
 
 async def get_main_admin_keyboard(bot, _):
     keyboard = InlineKeyboardBuilder()
-    from handlers.utils import admin_group_id
     admin_group_invite_link = (await bot.get_chat(admin_group_id)).invite_link
     keyboard.add(InlineKeyboardButton(text=_('Inquiries'), url=admin_group_invite_link))
     keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))

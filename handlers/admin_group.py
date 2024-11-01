@@ -7,19 +7,21 @@ from aiogram.filters import Command
 from aiogram.utils.formatting import Text, Bold
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from config.env import vsm_logo_uri, group_command_postfix
 from database.orm import get_subdivisions, upsert_subdivision_message_thread, get_inquiry_with_messages_by_id
 from filters.chat_type_filter import ChatTypeFilter
 from filters.is_admin import IsAdmin
 from handlers.employee import format_inquiry
 from handlers.fsm_states import Authorised
-from handlers.utils import vsm_logo_uri
 from keyboards.inline import get_back_button_keyboard
 from locales.locales import gettext
 from logger.logger import logger
 
 admin_group_router = Router()
 
-@admin_group_router.message(ChatTypeFilter(chat_type=['group', 'supergroup']), Command('register'))
+@admin_group_router.message(
+    ChatTypeFilter(chat_type=['group', 'supergroup']),
+    Command(f'register{group_command_postfix}'))
 async def registering_message_thread_id(message: Message, session):
     logger.warning('Registering thread')
     register_message = Text(
@@ -32,7 +34,7 @@ async def registering_message_thread_id(message: Message, session):
     for subdivision in subdivisions:
         keyboard.add(InlineKeyboardButton(
             text=subdivision.name,
-            callback_data=f'register_{subdivision.id}_{message.message_thread_id}'))
+            callback_data=f'register_{group_command_postfix}_{subdivision.id}_{message.message_thread_id}'))
 
     await message.answer(
         text=register_message.as_markdown(),
@@ -40,9 +42,11 @@ async def registering_message_thread_id(message: Message, session):
         parse_mode=ParseMode.MARKDOWN)
     await message.delete()
 
-@admin_group_router.callback_query(ChatTypeFilter(chat_type=['group', 'supergroup']), (F.data.startswith('register_')))
+@admin_group_router.callback_query(
+    ChatTypeFilter(chat_type=['group', 'supergroup']),
+    (F.data.startswith(f'register_{group_command_postfix}')))
 async def register_message_thread_id(callback_query: CallbackQuery, session):
-    _, subdivision_id, message_thread_id = callback_query.data.split('_')
+    *_, subdivision_id, message_thread_id = callback_query.data.split('_')
     message_thread_id = int(message_thread_id) if message_thread_id != 'None' else 0
     await upsert_subdivision_message_thread(session, int(subdivision_id), message_thread_id)
     await callback_query.message.delete()
@@ -51,7 +55,7 @@ async def register_message_thread_id(callback_query: CallbackQuery, session):
 @admin_group_router.callback_query(
     IsAdmin(),
     ChatTypeFilter(chat_type=['group', 'supergroup']),
-    (F.data.startswith('answer_')))
+    (F.data.startswith('answer_' + group_command_postfix)))
 async def answering_inquiry(callback_query: CallbackQuery, user_state: FSMContext, session):
     user_id = callback_query.from_user.id
 

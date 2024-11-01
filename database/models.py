@@ -59,7 +59,7 @@ class Subdivision(Base):
 class SubdivisionGSheet(Base):
     __tablename__ = 'subdivision_gsheet'
 
-    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), primary_key=True)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), primary_key=True)
     gsheets_id: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
 
     subdivision: Mapped["Subdivision"] = relationship('Subdivision', back_populates='gsheets')
@@ -69,7 +69,7 @@ class TimeRecord(Base):
     __tablename__ = 'time_record'
 
     employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
-    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), nullable=False)
     work_date: Mapped[Date] = mapped_column(Date, nullable=False)
     hours_worked: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -88,7 +88,7 @@ class Inquiry(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
-    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), nullable=False)
     subject: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default='open')
 
@@ -105,7 +105,7 @@ class Message(Base):
     __tablename__ = 'message'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id'), nullable=False)
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), nullable=False)
     employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'),
                                              nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -121,7 +121,7 @@ class Message(Base):
 class SubdivisionMessageThread(Base):
     __tablename__ = 'subdivision_message_thread'
 
-    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), primary_key=True, nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), primary_key=True, nullable=False)
     message_thread_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
 
     subdivision: Mapped["Subdivision"] = relationship('Subdivision')

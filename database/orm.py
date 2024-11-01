@@ -1,4 +1,3 @@
-import os
 import random
 from datetime import datetime
 
@@ -8,12 +7,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from config.env import admin_subdivision
 from database.engine import session_maker
 from database.models import Subdivision, Employee, TimeRecord, User, Inquiry, Message, SubdivisionMessageThread, \
     InquiryMessageMapping, SubdivisionGSheet, EmployeeAdmin
 from logger.logger import logger
 
-admin_subdivision = os.getenv('ADMIN_SUBDIVISION')
 
 def generate_pass():
     length = 6
@@ -390,7 +389,7 @@ async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivisio
         .where(SubdivisionMessageThread.subdivision_id == subdivision_id)
     )
 
-    return result.scalar()
+    return result.scalar_one_or_none() or 0
 
 async def upsert_inquiry_message_mapping(
         session: AsyncSession, inquiry_id: int, message_id: int, message_thread_id: int):
