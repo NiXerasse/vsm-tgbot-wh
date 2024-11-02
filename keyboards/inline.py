@@ -55,10 +55,11 @@ def get_main_keyboard(has_answered_inquiries, _):
     keyboard.add(InlineKeyboardButton(text=_('Log out of your account'), callback_data='log_out_button'))
     return keyboard.adjust(1, 1).as_markup()
 
-def get_wh_info_keyboard(_):
+def get_wh_info_keyboard(tab_no, month, year, _):
     keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text=_('Detailed'), callback_data=f'detailed_info_{tab_no}_{month}_{year}'))
     keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
-    return keyboard.adjust(1).as_markup()
+    return keyboard.adjust(2,).as_markup()
 
 def get_inquiry_menu_keyboard(inquiries, _):
     keyboard = InlineKeyboardBuilder()

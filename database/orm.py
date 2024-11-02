@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from sqlalchemy import select, and_, func, update
+from sqlalchemy import select, and_, func, update, extract
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -472,3 +472,27 @@ async def set_inquiry_status(session: AsyncSession, inquiry_id: int, new_status:
     )
     await session.execute(stmt)
     await session.commit()
+
+
+async def get_worked_hours_by_employee_tab_no(session: AsyncSession, tab_no: str, month: int, year: int):
+    stmt = (
+        select(Subdivision.name, Employee.full_name, TimeRecord.work_date, TimeRecord.hours_worked)
+        .join(Employee, Employee.id == TimeRecord.employee_id)
+        .join(Subdivision, Subdivision.id == TimeRecord.subdivision_id)
+        .where(Employee.tab_no == tab_no)
+        .where(extract('month', TimeRecord.work_date) == month)
+        .where(extract('year', TimeRecord.work_date) == year)
+        .order_by(Subdivision.name, TimeRecord.work_date)
+    )
+    result = await session.execute(stmt)
+
+    subdivision_hours = {}
+    for subdivision_name, employee_full_name, work_date, hours_worked in result.fetchall():
+        day_of_month = work_date.day
+
+        if subdivision_name not in subdivision_hours:
+            subdivision_hours[subdivision_name] = {'employee_full_name': employee_full_name, 'hours_worked': {}}
+
+        subdivision_hours[subdivision_name]['hours_worked'][day_of_month] = hours_worked
+
+    return subdivision_hours

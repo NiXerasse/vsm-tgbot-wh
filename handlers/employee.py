@@ -4,8 +4,8 @@ from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import StateFilter, CommandStart
+from aiogram.types import Message, CallbackQuery, BufferedInputFile
+from aiogram.filters import StateFilter, CommandStart, state
 from aiogram.utils.formatting import Bold, Text
 from babel.dates import get_month_names
 from dateutil.relativedelta import relativedelta
@@ -17,7 +17,8 @@ from database.orm import get_employee, get_wh_statistics, get_inquiries_by_emplo
     get_inquiry_with_messages_by_id, get_inquiry_by_id, delete_inquiry_by_id, add_message_to_inquiry, \
     get_subdivisions_by_employee_tab_no, get_message_thread_by_subdivision_id, upsert_inquiry_message_mapping, \
     get_inquiry_message_mapping, has_answered_inquiries, update_inquiry_status, has_non_initiator_messages, \
-    set_inquiry_status
+    set_inquiry_status, get_worked_hours_by_employee_tab_no
+from database.worked_hours_card_creator import WorkedHoursCardCreator
 from handlers.authorised_start import authorised_start
 from handlers.fsm_states import Authorised, Unauthorised
 from handlers.utils import update_start_message, update_callback_query_data,  \
@@ -131,8 +132,41 @@ async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session,
         )
         wh_info_message += wh_info_subdivision
 
-    await update_start_message(callback_query.message, state, wh_info_message.as_markdown(), get_wh_info_keyboard(_))
+    await update_start_message(
+        callback_query.message,
+        state,
+        wh_info_message.as_markdown(),
+        get_wh_info_keyboard(tab_no, target_month, target_year, _)
+    )
     await state.set_state(Authorised.wh_info)
+
+@employee_router.callback_query(StateFilter(Authorised.wh_info), (F.data.startswith('detailed_info_')))
+async def send_detailed_wh_info(callback_query: CallbackQuery, state, session, _):
+    *_cmd, tab_no, month, year = callback_query.data.split('_')
+    wh_info = await get_worked_hours_by_employee_tab_no(session, tab_no, int(month), int(year))
+    fsm_data = await state.get_data()
+    for subdivision_name, wh_data in wh_info.items():
+        png_image = WorkedHoursCardCreator(fsm_data.get('locale', 'en')).generate_png_card(
+            subdivision=f'ОП "{subdivision_name}"',
+            tab_no=tab_no,
+            full_name=wh_data['employee_full_name'],
+            month=int(month),
+            year=int(year),
+            hours_worked=wh_data['hours_worked'],
+        )
+
+        await update_start_message(
+            callback_query.message,
+            state,
+            '',
+            # Text(_('You can save this information to "Saved Messages"'), ' ➡️').as_markdown(),
+            get_back_button_keyboard(_),
+            new_photo=png_image
+        )
+
+        break # It needs to be thought about interpretation of employee worked at different subdivisions during month
+
+    await callback_query.answer()
 
 @employee_router.callback_query(StateFilter(Authorised.start_menu), (F.data == 'inquiry_menu'))
 async def inquiry_menu(callback_query: CallbackQuery, state: FSMContext, session, _):

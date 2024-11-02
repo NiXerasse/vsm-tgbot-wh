@@ -1,6 +1,7 @@
 import asyncio
 from datetime import timedelta
 
+from aiogram.exceptions import TelegramBadRequest
 from sqlalchemy import select, func, update
 
 from config.env import admin_group_id
@@ -25,26 +26,34 @@ async def update_tg_group_messages(session, bot, hours_older_than=44):
     for inq_mes_map, subdivision_name, inquiry_status in result.all():
         if subdivision_name != '.archive':
             logger.warning(f'Updating inquiry tg message: {inq_mes_map.inquiry_id}')
-            await bot.edit_message_reply_markup(
-                chat_id=admin_group_id,
-                message_id=inq_mes_map.message_id,
-                reply_markup=get_inquiry_answer_keyboard(inq_mes_map.inquiry_id, gettext['ru'])
-            )
-            inq_mes_map.updated = func.now()
-            await session.merge(inq_mes_map)
+            try:
+                await bot.edit_message_reply_markup(
+                    chat_id=admin_group_id,
+                    message_id=inq_mes_map.message_id,
+                    reply_markup=get_inquiry_answer_keyboard(inq_mes_map.inquiry_id, gettext['ru'])
+                )
+                inq_mes_map.updated = func.now()
+                await session.merge(inq_mes_map)
+            except TelegramBadRequest: # Message not found
+                await session.delete(inq_mes_map)
+                logger.warning(f'Deleted missing inquiry tg message: {inq_mes_map.inquiry_id}')
         elif 'closed' not in inquiry_status:
-            logger.warning(f'Updating archive inquiry tg message: {inq_mes_map.inquiry_id}')
-            await bot.edit_message_reply_markup(
-                chat_id=admin_group_id,
-                message_id=inq_mes_map.message_id,
-                reply_markup=None
-            )
-            new_inquiry_status = inquiry_status + '_closed'
-            await session.execute(
-                update(Inquiry)
-                .where(Inquiry.id == inq_mes_map.inquiry_id)
-                .values(status=new_inquiry_status)
-            )
+            logger.warning(f'Updating inquiry tg message: {inq_mes_map.inquiry_id}')
+            try:
+                await bot.edit_message_reply_markup(
+                    chat_id=admin_group_id,
+                    message_id=inq_mes_map.message_id,
+                    reply_markup=None
+                )
+                new_inquiry_status = inquiry_status + '_closed'
+                await session.execute(
+                    update(Inquiry)
+                    .where(Inquiry.id == inq_mes_map.inquiry_id)
+                    .values(status=new_inquiry_status)
+                )
+            except TelegramBadRequest: # Message not found
+                await session.delete(inq_mes_map)
+                logger.warning(f'Deleted missing inquiry tg message: {inq_mes_map.inquiry_id}')
         await session.commit()
 
     logger.info('Finished updating group messages')

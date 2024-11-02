@@ -3,7 +3,7 @@ import os
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InputMediaPhoto, CallbackQuery
+from aiogram.types import Message, InputMediaPhoto, CallbackQuery, BufferedInputFile
 from aiogram import types
 from aiogram.utils.formatting import Text, Bold
 from sqlalchemy.util import await_only
@@ -16,12 +16,19 @@ from locales.locales import gettext
 from logger.logger import logger
 
 
-async def update_start_message(message: Message, state: FSMContext, caption: str, markup: types.InlineKeyboardMarkup | None):
+async def update_start_message(
+        message: Message,
+        state: FSMContext,
+        caption: str,
+        markup: types.InlineKeyboardMarkup | None,
+        new_photo=None
+):
     start_msg_id = (await state.get_data()).get('start_msg_id')
+    media = vsm_logo_uri if new_photo is None else BufferedInputFile(new_photo, filename='image.png')
     try:
         await message.bot.edit_message_media(
             media=InputMediaPhoto(
-                media=vsm_logo_uri,
+                media=media,
                 caption=f'\u200B\n{caption}\n\u200B',
                 parse_mode='MarkdownV2'
             ),
