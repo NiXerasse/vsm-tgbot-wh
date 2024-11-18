@@ -1,7 +1,7 @@
 import os
+from urllib.parse import quote
 
-
-db_url = f"postgresql+asyncpg://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@" \
+db_url = f"postgresql+asyncpg://{os.getenv('DB_USER')}:{quote(os.getenv('DB_PASSWORD'))}@" \
          f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 vsm_logo_uri = os.getenv('LOGO_URI')
 admin_group_id = os.getenv('ADMIN_GROUP_ID')
