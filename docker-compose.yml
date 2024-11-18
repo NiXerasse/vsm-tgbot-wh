@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     restart: unless-stopped
-    command: ["./wait-for-db.sh", "db", "bash -c 'alembic upgrade head && python main.py'"]
+    command: ["./docker-init-scripts/wait-for-db.sh", "db", "bash -c 'alembic upgrade head && python main.py'"]
 
 volumes:
   postgres_data:
