@@ -11,4 +11,4 @@ until pg_isready -h "$host" -U "$DB_USER"; do
 done
 
 >&2 echo "Postgres is up - executing command"
-exec $cmd
+exec bash -c "$cmd"
