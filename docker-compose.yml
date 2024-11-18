@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   bot:
     build:
       context: .
@@ -11,20 +23,6 @@ services:
       DB_HOST: db
     depends_on:
       - db
-    volumes:
-      - .:/app
-    restart: unless-stopped
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker-config:/docker-entrypoint-initdb.d/
-    entrypoint: /docker-entrypoint-initdb.d/entrypoint.sh
     restart: unless-stopped
 
 volumes:
