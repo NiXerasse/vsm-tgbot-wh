@@ -7,89 +7,307 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-11-02 15:07+0300\n"
+"POT-Creation-Date: 2024-11-15 17:53+0300\n"
 "PO-Revision-Date: 2024-10-16 17:52+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: handlers/admin.py:35 handlers/employee.py:41
-msgid "Welcome"
-msgstr "Добро пожаловать"
-
-#: handlers/admin_group.py:67
-msgid "Write answer for inquiry presented below"
-msgstr "Напишите ответ на обращение, представленное ниже"
-
-#: handlers/admin_group.py:92
+#: handlers/admin_group_handlers/admin_group_inquiry_handlers.py:46
 msgid "The inquiry has been sent to bot for answering. Go to the bot."
 msgstr "Обращение было передано в бот для ответа. Перейдите в бот."
 
-#: handlers/employee.py:122
+#: keyboards/admin_group_inquiry_keyboards.py:14
+msgid "Send to bot for answer"
+msgstr "Передать в бот для ответа"
+
+#: keyboards/admin_group_inquiry_keyboards.py:19
+msgid "Go to bot"
+msgstr "Перейти в бот"
+
+#: keyboards/admin_keyboards.py:13 keyboards/employee_keyboards.py:13
+msgid "Inquiries"
+msgstr "Обращения"
+
+#: keyboards/admin_keyboards.py:15
+msgid "Reset employee password"
+msgstr "Сбросить пароль сотрудника"
+
+#: keyboards/admin_keyboards.py:16 keyboards/employee_keyboards.py:17
+msgid "Log out of your account"
+msgstr "Выйти из личного кабинета"
+
+#: keyboards/admin_keyboards.py:23
+msgid "Reset password"
+msgstr "Сбросить пароль"
+
+#: keyboards/admin_keyboards.py:25 keyboards/auth_keyboards.py:27
+#: keyboards/auth_keyboards.py:34 keyboards/auth_keyboards.py:41
+#: keyboards/common_keyboards.py:9 keyboards/employee_keyboards.py:25
+#: keyboards/employee_keyboards.py:42 keyboards/employee_keyboards.py:49
+#: keyboards/employee_keyboards.py:60 keyboards/employee_keyboards.py:68
+msgid "Back"
+msgstr "Назад"
+
+#: keyboards/auth_keyboards.py:12
+msgid "Login by PIN"
+msgstr "Войти по ПИН"
+
+#: keyboards/auth_keyboards.py:13
+msgid "Login by username"
+msgstr "Войти по логину"
+
+#: keyboards/auth_keyboards.py:26
+msgid "Got it"
+msgstr "Ясно"
+
+#: keyboards/auth_keyboards.py:33
+msgid "Save"
+msgstr "Сохранить"
+
+#: keyboards/auth_keyboards.py:40
+msgid "Change username"
+msgstr "Сменить логин"
+
+#: keyboards/employee_keyboards.py:12
+msgid "Get worked hours info"
+msgstr "Посмотреть отработанные часы"
+
+#: keyboards/employee_keyboards.py:24
+msgid "Detailed"
+msgstr "Подробнее"
+
+#: keyboards/employee_keyboards.py:41
+msgid "Write inquiry"
+msgstr "Написать обращение"
+
+#: keyboards/employee_keyboards.py:48
+msgid "Send"
+msgstr "Отправить"
+
+#: keyboards/employee_keyboards.py:57
+msgid "Add a message"
+msgstr "Добавить сообщение"
+
+#: keyboards/employee_keyboards.py:59
+msgid "Delete the entire inquiry"
+msgstr "Удалить обращение полностью"
+
+#: keyboards/employee_keyboards.py:67
+msgid "Delete"
+msgstr "Удалить"
+
+#: utils/message_builders/admin_group_message_builder.py:14
+msgid "Write answer for inquiry presented below"
+msgstr "Напишите ответ на обращение, представленное ниже"
+
+#: utils/message_builders/admin_message_builder.py:10
+#: utils/message_builders/employee_message_builder.py:11
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+#: utils/message_builders/admin_message_builder.py:12
+msgid "You're in administration mode"
+msgstr "Вы находитесь в режиме администрирования"
+
+#: utils/message_builders/admin_message_builder.py:18
+msgid "Your reply to inquiry has been sent."
+msgstr "Ваш ответ на обращение отослан."
+
+#: utils/message_builders/admin_message_builder.py:19
+msgid "The inquiry follows below"
+msgstr "Текст обращения приведен ниже"
+
+#: utils/message_builders/admin_message_builder.py:26
+msgid "Enter the service number of employee"
+msgstr "Введите табельный номер сотрудника"
+
+#: utils/message_builders/admin_message_builder.py:32
+#, python-format
+msgid "The employee with service number %(tab_no)s is not found"
+msgstr "Сотрудник с табельным номером %(tab_no)s не найден"
+
+#: utils/message_builders/admin_message_builder.py:33
+msgid "Enter correct service number"
+msgstr "Введите корректный табельный номер"
+
+#: utils/message_builders/admin_message_builder.py:39
+msgid "Are you sure you want to reset password for employee?"
+msgstr "Вы уверены, что хотите сбросить пароль для сотрудника?"
+
+#: utils/message_builders/admin_message_builder.py:47
+msgid "The password for employee has been reset successfully"
+msgstr "Пароль сотрудника успешно сброшен"
+
+#: utils/message_builders/admin_message_builder.py:48
+msgid "Employee info"
+msgstr "Данные сотрудника"
+
+#: utils/message_builders/admin_message_builder.py:52
+msgid "The employee can login by an old PIN"
+msgstr "Сотрудник может войти с использованием старого ПИН"
+
+#: utils/message_builders/admin_message_builder.py:53
+msgid "PIN"
+msgstr "ПИН"
+
+#: utils/message_builders/auth_message_builder.py:9
+msgid "Enter your personal PIN"
+msgstr "Введите Ваш личный ПИН"
+
+#: utils/message_builders/auth_message_builder.py:15
+msgid "Choose your language"
+msgstr "Выберите язык"
+
+#: utils/message_builders/auth_message_builder.py:21
+msgid "You entered a wrong PIN"
+msgstr "Вы ввели неверный ПИН"
+
+#: utils/message_builders/auth_message_builder.py:23
+msgid "Please contact your supervisor to get correct PIN"
+msgstr "Пожалуйста, обратитесь к Вашему руководителю и получите ПИН"
+
+#: utils/message_builders/auth_message_builder.py:29
+msgid "You've already set your password"
+msgstr "Вы уже установили пароль"
+
+#: utils/message_builders/auth_message_builder.py:30
+msgid "Please log in by your username"
+msgstr "Пожалуйста, войдите по логину"
+
+#: utils/message_builders/auth_message_builder.py:36
+msgid "Hello"
+msgstr "Здравствуйте"
+
+#: utils/message_builders/auth_message_builder.py:38
+msgid "Your service number"
+msgstr "Ваш табельный номер"
+
+#: utils/message_builders/auth_message_builder.py:39
+msgid ""
+"This is your username, which you will use to log into your personal "
+"account."
+msgstr "Это Ваш логин, который Вы будете использовать для входа в личный кабинет."
+
+#: utils/message_builders/auth_message_builder.py:44
+msgid "Now you need to enter new password for your account"
+msgstr "Теперь Вам необходимо ввести новый пароль для Вашего аккаунта"
+
+#: utils/message_builders/auth_message_builder.py:49
+msgid "Your username"
+msgstr "Ваш логин"
+
+#: utils/message_builders/auth_message_builder.py:50
+msgid "Your password"
+msgstr "Ваш пароль"
+
+#: utils/message_builders/auth_message_builder.py:56
+msgid "Data saved successfully"
+msgstr "Данные успещно сохранены"
+
+#: utils/message_builders/auth_message_builder.py:57
+msgid "You can now login by username"
+msgstr "Теперь Вы можете войти по логину"
+
+#: utils/message_builders/auth_message_builder.py:63
+msgid "Please enter your username"
+msgstr "Пожалуйста, введите Ваш логин"
+
+#: utils/message_builders/auth_message_builder.py:72
+#: utils/message_builders/auth_message_builder.py:88
+msgid "Please enter your password"
+msgstr "Пожалуйста, введите Ваш пароль"
+
+#: utils/message_builders/auth_message_builder.py:78
+msgid "You've entered wrong username"
+msgstr "Вы ввели неверный логин"
+
+#: utils/message_builders/auth_message_builder.py:80
+#: utils/message_builders/auth_message_builder.py:96
+msgid "Please try again"
+msgstr "Пожалуйста, попробуйте еще раз"
+
+#: utils/message_builders/auth_message_builder.py:86
+msgid "Username"
+msgstr "Логин"
+
+#: utils/message_builders/auth_message_builder.py:94
+msgid "You've entered wrong password"
+msgstr "Вы ввели неверный пароль"
+
+#: utils/message_builders/employee_message_builder.py:21
 msgid "Data for"
 msgstr "Данные за"
 
-#: handlers/employee.py:129
+#: utils/message_builders/employee_message_builder.py:29
 msgid "Number of days worked"
 msgstr "Количество отработанных дней"
 
-#: handlers/employee.py:130
+#: utils/message_builders/employee_message_builder.py:30
 msgid "Accounted hours"
 msgstr "Начисленные часы"
 
-#: handlers/employee.py:159
-msgid "You can save this information to \"Saved Messages\""
-msgstr "Вы можете сохранить эти сведения в \"Избранное\""
-
-#: handlers/employee.py:173
+#: utils/message_builders/employee_message_builder.py:41
 msgid "Here you can write an inquiry regarding employment relations and workflow."
 msgstr ""
 "Здесь Вы можете написать обращение относительно трудовых отношений или "
 "рабочего процесса."
 
-#: handlers/employee.py:175
+#: utils/message_builders/employee_message_builder.py:43
 msgid "You have no inquiries yet."
 msgstr "У Вас пока нет обращений."
 
-#: handlers/employee.py:178
+#: utils/message_builders/employee_message_builder.py:48
 msgid "Your inquiries"
 msgstr "Ваши обращения"
 
-#: handlers/employee.py:186
+#: utils/message_builders/employee_message_builder.py:57
 msgid "To work with inquiry press a button with corresponding number below"
 msgstr "Для работы с обращением, нажмите кнопку с соответствующим номером ниже"
 
-#: handlers/employee.py:207
+#: utils/message_builders/employee_message_builder.py:85
+msgid "SD"
+msgstr "ОП"
+
+#: utils/message_builders/employee_message_builder.py:87
+msgid "Topic"
+msgstr "Тема"
+
+#: utils/message_builders/employee_message_builder.py:95
+msgid "Date"
+msgstr "Дата"
+
+#: utils/message_builders/employee_message_builder.py:102
 msgid "The inquiry"
 msgstr "Обращение"
 
-#: handlers/employee.py:209
+#: utils/message_builders/employee_message_builder.py:104
 msgid "will be deleted"
 msgstr "будет удалено"
 
-#: handlers/employee.py:233
+#: utils/message_builders/employee_message_builder.py:110
 msgid "Enter a text for your inquiry with topic"
 msgstr "Введите текст для Вашего обращения с темой"
 
-#: handlers/employee.py:248
+#: utils/message_builders/employee_message_builder.py:118
 msgid "You are adding the message to the inquiry with topic"
 msgstr "Вы добавляете сообщение в обращение с темой:"
 
-#: handlers/employee.py:250
+#: utils/message_builders/employee_message_builder.py:120
 msgid "Content of the message"
 msgstr "Содержание сообщения"
 
-#: handlers/employee.py:276
+#: utils/message_builders/employee_message_builder.py:127
 msgid "Enter a topic for your inquiry."
 msgstr "Введите тему Вашего обращения"
 
-#: handlers/employee.py:278
+#: utils/message_builders/employee_message_builder.py:129
 msgid ""
 "It will be displayed in the list of requests, so it should be brief and "
 "meaningful."
@@ -97,174 +315,10 @@ msgstr ""
 "Она будет отображаться в списке обращений и, поэтому, должна быть "
 "короткой и осмысленной."
 
-#: handlers/employee.py:294
+#: utils/message_builders/employee_message_builder.py:135
 msgid "Enter the text for the inquiry with topic"
 msgstr "Введите текст для обращения с темой"
 
-#: handlers/start.py:52
-msgid "Enter your personal PIN"
-msgstr "Введите Ваш личный ПИН"
-
-#: handlers/start.py:58
-msgid "Choose your language"
-msgstr "Выберите язык"
-
-#: handlers/start.py:87 handlers/start.py:134
-msgid "Now you need to enter new password for your account"
-msgstr "Теперь Вам необходимо ввести новый пароль для Вашего аккаунта"
-
-#: handlers/start.py:98
-msgid "You entered a wrong PIN"
-msgstr "Вы ввели неверный ПИН"
-
-#: handlers/start.py:99
-msgid "Please contact your supervisor to get correct PIN"
-msgstr "Пожалуйста, обратитесь к Вашему руководителю и получите ПИН"
-
-#: handlers/start.py:108
-msgid "You've already set your password"
-msgstr "Вы уже установили пароль"
-
-#: handlers/start.py:109
-msgid "Please log in by your username"
-msgstr "Пожалуйста, войдите по логину"
-
-#: handlers/start.py:117
-msgid "Hello"
-msgstr "Здравствуйте"
-
-#: handlers/start.py:119
-msgid "Your service number"
-msgstr "Ваш табельный номер"
-
-#: handlers/start.py:120
-msgid ""
-"This is your username, which you will use to log into your personal "
-"account."
-msgstr "Это Ваш логин, который Вы будете использовать для входа в личный кабинет."
-
-#: handlers/start.py:121
-msgid "I will keep it below this message"
-msgstr "Я сохраню его под этим сообщением"
-
-#: handlers/start.py:141 handlers/start.py:175
-msgid "Please enter your username"
-msgstr "Пожалуйста, введите Ваш логин"
-
-#: handlers/start.py:150
-msgid "Your password"
-msgstr "Ваш пароль"
-
-#: handlers/start.py:164
-msgid "Data saved successfully"
-msgstr "Данные успещно сохранены"
-
-#: handlers/start.py:165
-msgid "You can now login by username"
-msgstr "Теперь Вы можете войти по логину"
-
-#: handlers/start.py:185 handlers/start.py:210
-msgid "Please enter your password"
-msgstr "Пожалуйста, введите Ваш пароль"
-
-#: handlers/start.py:200
-msgid "You've entered wrong username"
-msgstr "Вы ввели неверный логин"
-
-#: handlers/start.py:201 handlers/start.py:227
-msgid "Please try again"
-msgstr "Пожалуйста, попробуйте еще раз"
-
-#: handlers/start.py:209
-msgid "Username"
-msgstr "Логин"
-
-#: handlers/start.py:226
-msgid "You've entered wrong password"
-msgstr "Вы ввели неверный пароль"
-
-#: handlers/utils.py:48
-msgid "SD"
-msgstr "ОП"
-
-#: handlers/utils.py:54
-msgid "Topic"
-msgstr "Тема"
-
-#: handlers/utils.py:61
-msgid "Date"
-msgstr "Дата"
-
-#: keyboards/inline.py:15
-msgid "Login by PIN"
-msgstr "Войти по ПИН"
-
-#: keyboards/inline.py:16
-msgid "Login by username"
-msgstr "Войти по логину"
-
-#: keyboards/inline.py:27 keyboards/inline.py:33 keyboards/inline.py:39
-#: keyboards/inline.py:45 keyboards/inline.py:61 keyboards/inline.py:76
-#: keyboards/inline.py:82 keyboards/inline.py:90 keyboards/inline.py:96
-msgid "Back"
-msgstr "Назад"
-
-#: keyboards/inline.py:32
-msgid "Got it"
-msgstr "Ясно"
-
-#: keyboards/inline.py:38
-msgid "Save"
-msgstr "Сохранить"
-
-#: keyboards/inline.py:44
-msgid "Change username"
-msgstr "Сменить логин"
-
-#: keyboards/inline.py:50
-msgid "Get worked hours info"
-msgstr "Посмотреть отработанные часы"
-
-#: keyboards/inline.py:51 keyboards/inline.py:108
-msgid "Inquiries"
-msgstr "Обращения"
-
-#: keyboards/inline.py:55 keyboards/inline.py:109
-msgid "Log out of your account"
-msgstr "Выйти из личного кабинета"
-
-#: keyboards/inline.py:60
-msgid "Detailed"
-msgstr "Подробнее"
-
-#: keyboards/inline.py:75
-msgid "Write inquiry"
-msgstr "Написать обращение"
-
-#: keyboards/inline.py:81
-msgid "Send"
-msgstr "Отправить"
-
-#: keyboards/inline.py:88
-msgid "Add a message"
-msgstr "Добавить сообщение"
-
-#: keyboards/inline.py:89
-msgid "Delete the entire inquiry"
-msgstr "Удалить обращение полностью"
-
-#: keyboards/inline.py:95
-msgid "Delete"
-msgstr "Удалить"
-
-#: keyboards/inline.py:101
-msgid "Send to bot for answer"
-msgstr "Передать в бот для ответа"
-
-#: keyboards/inline.py:102
-msgid "Go to bot"
-msgstr "Перейти в бот"
-
-#~ msgid "The message has been sent to bot for answering. Go to the bot."
-#~ msgstr ""
+#~ msgid "I will keep it below this message"
+#~ msgstr "Я сохраню его под этим сообщением"
 

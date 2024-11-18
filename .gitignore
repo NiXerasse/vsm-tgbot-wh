@@ -1,6 +1,7 @@
 .venv
 .env
 .idea
+.garbage
 __pycache__/
 vsmtgbot.json
 vsmtgbot_prod.json

@@ -7,257 +7,311 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-11-02 15:07+0300\n"
+"POT-Creation-Date: 2024-11-15 17:53+0300\n"
 "PO-Revision-Date: 2024-10-16 17:51+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.16.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: handlers/admin.py:35 handlers/employee.py:41
-msgid "Welcome"
-msgstr ""
-
-#: handlers/admin_group.py:67
-msgid "Write answer for inquiry presented below"
-msgstr ""
-
-#: handlers/admin_group.py:92
+#: handlers/admin_group_handlers/admin_group_inquiry_handlers.py:46
 msgid "The inquiry has been sent to bot for answering. Go to the bot."
 msgstr ""
 
-#: handlers/employee.py:122
-msgid "Data for"
+#: keyboards/admin_group_inquiry_keyboards.py:14
+msgid "Send to bot for answer"
 msgstr ""
 
-#: handlers/employee.py:129
-msgid "Number of days worked"
+#: keyboards/admin_group_inquiry_keyboards.py:19
+msgid "Go to bot"
 msgstr ""
 
-#: handlers/employee.py:130
-msgid "Accounted hours"
+#: keyboards/admin_keyboards.py:13 keyboards/employee_keyboards.py:13
+msgid "Inquiries"
 msgstr ""
 
-#: handlers/employee.py:159
-msgid "You can save this information to \"Saved Messages\""
+#: keyboards/admin_keyboards.py:15
+msgid "Reset employee password"
 msgstr ""
 
-#: handlers/employee.py:173
-msgid "Here you can write an inquiry regarding employment relations and workflow."
+#: keyboards/admin_keyboards.py:16 keyboards/employee_keyboards.py:17
+msgid "Log out of your account"
 msgstr ""
 
-#: handlers/employee.py:175
-msgid "You have no inquiries yet."
+#: keyboards/admin_keyboards.py:23
+msgid "Reset password"
 msgstr ""
 
-#: handlers/employee.py:178
-msgid "Your inquiries"
+#: keyboards/admin_keyboards.py:25 keyboards/auth_keyboards.py:27
+#: keyboards/auth_keyboards.py:34 keyboards/auth_keyboards.py:41
+#: keyboards/common_keyboards.py:9 keyboards/employee_keyboards.py:25
+#: keyboards/employee_keyboards.py:42 keyboards/employee_keyboards.py:49
+#: keyboards/employee_keyboards.py:60 keyboards/employee_keyboards.py:68
+msgid "Back"
 msgstr ""
 
-#: handlers/employee.py:186
-msgid "To work with inquiry press a button with corresponding number below"
+#: keyboards/auth_keyboards.py:12
+msgid "Login by PIN"
 msgstr ""
 
-#: handlers/employee.py:207
-msgid "The inquiry"
+#: keyboards/auth_keyboards.py:13
+msgid "Login by username"
 msgstr ""
 
-#: handlers/employee.py:209
-msgid "will be deleted"
+#: keyboards/auth_keyboards.py:26
+msgid "Got it"
 msgstr ""
 
-#: handlers/employee.py:233
-msgid "Enter a text for your inquiry with topic"
+#: keyboards/auth_keyboards.py:33
+msgid "Save"
 msgstr ""
 
-#: handlers/employee.py:248
-msgid "You are adding the message to the inquiry with topic"
+#: keyboards/auth_keyboards.py:40
+msgid "Change username"
 msgstr ""
 
-#: handlers/employee.py:250
-msgid "Content of the message"
+#: keyboards/employee_keyboards.py:12
+msgid "Get worked hours info"
 msgstr ""
 
-#: handlers/employee.py:276
-msgid "Enter a topic for your inquiry."
+#: keyboards/employee_keyboards.py:24
+msgid "Detailed"
 msgstr ""
 
-#: handlers/employee.py:278
-msgid ""
-"It will be displayed in the list of requests, so it should be brief and "
-"meaningful."
+#: keyboards/employee_keyboards.py:41
+msgid "Write inquiry"
 msgstr ""
 
-#: handlers/employee.py:294
-msgid "Enter the text for the inquiry with topic"
+#: keyboards/employee_keyboards.py:48
+msgid "Send"
 msgstr ""
 
-#: handlers/start.py:52
+#: keyboards/employee_keyboards.py:57
+msgid "Add a message"
+msgstr ""
+
+#: keyboards/employee_keyboards.py:59
+msgid "Delete the entire inquiry"
+msgstr ""
+
+#: keyboards/employee_keyboards.py:67
+msgid "Delete"
+msgstr ""
+
+#: utils/message_builders/admin_group_message_builder.py:14
+msgid "Write answer for inquiry presented below"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:10
+#: utils/message_builders/employee_message_builder.py:11
+msgid "Welcome"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:12
+msgid "You're in administration mode"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:18
+msgid "Your reply to inquiry has been sent."
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:19
+msgid "The inquiry follows below"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:26
+msgid "Enter the service number of employee"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:32
+#, python-format
+msgid "The employee with service number %(tab_no)s is not found"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:33
+msgid "Enter correct service number"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:39
+msgid "Are you sure you want to reset password for employee?"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:47
+msgid "The password for employee has been reset successfully"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:48
+msgid "Employee info"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:52
+msgid "The employee can login by an old PIN"
+msgstr ""
+
+#: utils/message_builders/admin_message_builder.py:53
+msgid "PIN"
+msgstr ""
+
+#: utils/message_builders/auth_message_builder.py:9
 msgid "Enter your personal PIN"
 msgstr ""
 
-#: handlers/start.py:58
+#: utils/message_builders/auth_message_builder.py:15
 msgid "Choose your language"
 msgstr ""
 
-#: handlers/start.py:87 handlers/start.py:134
-msgid "Now you need to enter new password for your account"
-msgstr ""
-
-#: handlers/start.py:98
+#: utils/message_builders/auth_message_builder.py:21
 msgid "You entered a wrong PIN"
 msgstr ""
 
-#: handlers/start.py:99
+#: utils/message_builders/auth_message_builder.py:23
 msgid "Please contact your supervisor to get correct PIN"
 msgstr ""
 
-#: handlers/start.py:108
+#: utils/message_builders/auth_message_builder.py:29
 msgid "You've already set your password"
 msgstr ""
 
-#: handlers/start.py:109
+#: utils/message_builders/auth_message_builder.py:30
 msgid "Please log in by your username"
 msgstr ""
 
-#: handlers/start.py:117
+#: utils/message_builders/auth_message_builder.py:36
 msgid "Hello"
 msgstr ""
 
-#: handlers/start.py:119
+#: utils/message_builders/auth_message_builder.py:38
 msgid "Your service number"
 msgstr ""
 
-#: handlers/start.py:120
+#: utils/message_builders/auth_message_builder.py:39
 msgid ""
 "This is your username, which you will use to log into your personal "
 "account."
 msgstr ""
 
-#: handlers/start.py:121
-msgid "I will keep it below this message"
+#: utils/message_builders/auth_message_builder.py:44
+msgid "Now you need to enter new password for your account"
 msgstr ""
 
-#: handlers/start.py:141 handlers/start.py:175
-msgid "Please enter your username"
+#: utils/message_builders/auth_message_builder.py:49
+msgid "Your username"
 msgstr ""
 
-#: handlers/start.py:150
+#: utils/message_builders/auth_message_builder.py:50
 msgid "Your password"
 msgstr ""
 
-#: handlers/start.py:164
+#: utils/message_builders/auth_message_builder.py:56
 msgid "Data saved successfully"
 msgstr ""
 
-#: handlers/start.py:165
+#: utils/message_builders/auth_message_builder.py:57
 msgid "You can now login by username"
 msgstr ""
 
-#: handlers/start.py:185 handlers/start.py:210
+#: utils/message_builders/auth_message_builder.py:63
+msgid "Please enter your username"
+msgstr ""
+
+#: utils/message_builders/auth_message_builder.py:72
+#: utils/message_builders/auth_message_builder.py:88
 msgid "Please enter your password"
 msgstr ""
 
-#: handlers/start.py:200
+#: utils/message_builders/auth_message_builder.py:78
 msgid "You've entered wrong username"
 msgstr ""
 
-#: handlers/start.py:201 handlers/start.py:227
+#: utils/message_builders/auth_message_builder.py:80
+#: utils/message_builders/auth_message_builder.py:96
 msgid "Please try again"
 msgstr ""
 
-#: handlers/start.py:209
+#: utils/message_builders/auth_message_builder.py:86
 msgid "Username"
 msgstr ""
 
-#: handlers/start.py:226
+#: utils/message_builders/auth_message_builder.py:94
 msgid "You've entered wrong password"
 msgstr ""
 
-#: handlers/utils.py:48
+#: utils/message_builders/employee_message_builder.py:21
+msgid "Data for"
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:29
+msgid "Number of days worked"
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:30
+msgid "Accounted hours"
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:41
+msgid "Here you can write an inquiry regarding employment relations and workflow."
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:43
+msgid "You have no inquiries yet."
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:48
+msgid "Your inquiries"
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:57
+msgid "To work with inquiry press a button with corresponding number below"
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:85
 msgid "SD"
 msgstr ""
 
-#: handlers/utils.py:54
+#: utils/message_builders/employee_message_builder.py:87
 msgid "Topic"
 msgstr ""
 
-#: handlers/utils.py:61
+#: utils/message_builders/employee_message_builder.py:95
 msgid "Date"
 msgstr ""
 
-#: keyboards/inline.py:15
-msgid "Login by PIN"
+#: utils/message_builders/employee_message_builder.py:102
+msgid "The inquiry"
 msgstr ""
 
-#: keyboards/inline.py:16
-msgid "Login by username"
+#: utils/message_builders/employee_message_builder.py:104
+msgid "will be deleted"
 msgstr ""
 
-#: keyboards/inline.py:27 keyboards/inline.py:33 keyboards/inline.py:39
-#: keyboards/inline.py:45 keyboards/inline.py:61 keyboards/inline.py:76
-#: keyboards/inline.py:82 keyboards/inline.py:90 keyboards/inline.py:96
-msgid "Back"
+#: utils/message_builders/employee_message_builder.py:110
+msgid "Enter a text for your inquiry with topic"
 msgstr ""
 
-#: keyboards/inline.py:32
-msgid "Got it"
+#: utils/message_builders/employee_message_builder.py:118
+msgid "You are adding the message to the inquiry with topic"
 msgstr ""
 
-#: keyboards/inline.py:38
-msgid "Save"
+#: utils/message_builders/employee_message_builder.py:120
+msgid "Content of the message"
 msgstr ""
 
-#: keyboards/inline.py:44
-msgid "Change username"
+#: utils/message_builders/employee_message_builder.py:127
+msgid "Enter a topic for your inquiry."
 msgstr ""
 
-#: keyboards/inline.py:50
-msgid "Get worked hours info"
+#: utils/message_builders/employee_message_builder.py:129
+msgid ""
+"It will be displayed in the list of requests, so it should be brief and "
+"meaningful."
 msgstr ""
 
-#: keyboards/inline.py:51 keyboards/inline.py:108
-msgid "Inquiries"
-msgstr ""
-
-#: keyboards/inline.py:55 keyboards/inline.py:109
-msgid "Log out of your account"
-msgstr ""
-
-#: keyboards/inline.py:60
-msgid "Detailed"
-msgstr ""
-
-#: keyboards/inline.py:75
-msgid "Write inquiry"
-msgstr ""
-
-#: keyboards/inline.py:81
-msgid "Send"
-msgstr ""
-
-#: keyboards/inline.py:88
-msgid "Add a message"
-msgstr ""
-
-#: keyboards/inline.py:89
-msgid "Delete the entire inquiry"
-msgstr ""
-
-#: keyboards/inline.py:95
-msgid "Delete"
-msgstr ""
-
-#: keyboards/inline.py:101
-msgid "Send to bot for answer"
-msgstr ""
-
-#: keyboards/inline.py:102
-msgid "Go to bot"
+#: utils/message_builders/employee_message_builder.py:135
+msgid "Enter the text for the inquiry with topic"
 msgstr ""
 
 #~ msgid ""
@@ -341,5 +395,23 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The message has been sent to bot for answering. Go to the bot."
+#~ msgstr ""
+
+#~ msgid "You can save this information to \"Saved Messages\""
+#~ msgstr ""
+
+#~ msgid "Enter your personal PIN"
+#~ msgstr ""
+
+#~ msgid "Choose your language"
+#~ msgstr ""
+
+#~ msgid "You entered a wrong PIN"
+#~ msgstr ""
+
+#~ msgid "Please contact your supervisor to get correct PIN"
+#~ msgstr ""
+
+#~ msgid "I will keep it below this message"
 #~ msgstr ""
 
