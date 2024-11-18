@@ -4,7 +4,8 @@ FROM python:3.12-slim
 # Установка системных зависимостей
 RUN apt-get update && apt-get install -y \
     libpq-dev gcc libxml2-dev libxslt-dev \
-    libcairo2 libpango1.0-0 libjpeg62-turbo-dev libpng-dev && \
+    libcairo2 libpango1.0-0 libjpeg62-turbo-dev libpng-dev \
+    postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Устанавливаем рабочую директорию

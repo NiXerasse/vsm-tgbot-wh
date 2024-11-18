@@ -1,10 +1,6 @@
-version: '3.8'
-
 services:
   db:
-    build:
-      context: .
-      dockerfile: Dockerfile.db
+    image: postgres:15
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -24,6 +20,7 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    command: ["./wait-for-db.sh", "db", "bash -c 'alembic upgrade head && python main.py'"]
 
 volumes:
   postgres_data:
