@@ -7,21 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-11-15 17:53+0300\n"
+"POT-Creation-Date: 2024-11-19 11:55+0300\n"
 "PO-Revision-Date: 2024-10-16 17:52+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.16.0\n"
 
 #: handlers/admin_group_handlers/admin_group_inquiry_handlers.py:46
 msgid "The inquiry has been sent to bot for answering. Go to the bot."
 msgstr "Обращение было передано в бот для ответа. Перейдите в бот."
+
+#: handlers/auth_handlers/auth_base_handlers.py:15
+#: utils/message_builders/auth_message_builder.py:36
+msgid "Hello"
+msgstr "Здравствуйте"
 
 #: keyboards/admin_group_inquiry_keyboards.py:14
 msgid "Send to bot for answer"
@@ -49,9 +54,9 @@ msgstr "Сбросить пароль"
 
 #: keyboards/admin_keyboards.py:25 keyboards/auth_keyboards.py:27
 #: keyboards/auth_keyboards.py:34 keyboards/auth_keyboards.py:41
-#: keyboards/common_keyboards.py:9 keyboards/employee_keyboards.py:25
-#: keyboards/employee_keyboards.py:42 keyboards/employee_keyboards.py:49
-#: keyboards/employee_keyboards.py:60 keyboards/employee_keyboards.py:68
+#: keyboards/common_keyboards.py:9 keyboards/employee_keyboards.py:26
+#: keyboards/employee_keyboards.py:43 keyboards/employee_keyboards.py:50
+#: keyboards/employee_keyboards.py:61 keyboards/employee_keyboards.py:69
 msgid "Back"
 msgstr "Назад"
 
@@ -83,25 +88,39 @@ msgstr "Посмотреть отработанные часы"
 msgid "Detailed"
 msgstr "Подробнее"
 
-#: keyboards/employee_keyboards.py:41
+#: keyboards/employee_keyboards.py:25
+msgid "The rate info"
+msgstr "Информация по ставке"
+
+#: keyboards/employee_keyboards.py:42
 msgid "Write inquiry"
 msgstr "Написать обращение"
 
-#: keyboards/employee_keyboards.py:48
+#: keyboards/employee_keyboards.py:49
 msgid "Send"
 msgstr "Отправить"
 
-#: keyboards/employee_keyboards.py:57
+#: keyboards/employee_keyboards.py:58
 msgid "Add a message"
 msgstr "Добавить сообщение"
 
-#: keyboards/employee_keyboards.py:59
+#: keyboards/employee_keyboards.py:60
 msgid "Delete the entire inquiry"
 msgstr "Удалить обращение полностью"
 
-#: keyboards/employee_keyboards.py:67
+#: keyboards/employee_keyboards.py:68
 msgid "Delete"
 msgstr "Удалить"
+
+#: services/employee_service/worked_hours_card_creator.py:65
+#: utils/message_builders/employee_message_builder.py:29
+msgid "Number of days worked"
+msgstr "Количество отработанных дней"
+
+#: services/employee_service/worked_hours_card_creator.py:66
+#: utils/message_builders/employee_message_builder.py:30
+msgid "Accounted hours"
+msgstr "Начисленные часы"
 
 #: utils/message_builders/admin_group_message_builder.py:14
 msgid "Write answer for inquiry presented below"
@@ -181,10 +200,6 @@ msgstr "Вы уже установили пароль"
 msgid "Please log in by your username"
 msgstr "Пожалуйста, войдите по логину"
 
-#: utils/message_builders/auth_message_builder.py:36
-msgid "Hello"
-msgstr "Здравствуйте"
-
 #: utils/message_builders/auth_message_builder.py:38
 msgid "Your service number"
 msgstr "Ваш табельный номер"
@@ -244,14 +259,6 @@ msgstr "Вы ввели неверный пароль"
 #: utils/message_builders/employee_message_builder.py:21
 msgid "Data for"
 msgstr "Данные за"
-
-#: utils/message_builders/employee_message_builder.py:29
-msgid "Number of days worked"
-msgstr "Количество отработанных дней"
-
-#: utils/message_builders/employee_message_builder.py:30
-msgid "Accounted hours"
-msgstr "Начисленные часы"
 
 #: utils/message_builders/employee_message_builder.py:41
 msgid "Here you can write an inquiry regarding employment relations and workflow."
@@ -318,6 +325,33 @@ msgstr ""
 #: utils/message_builders/employee_message_builder.py:135
 msgid "Enter the text for the inquiry with topic"
 msgstr "Введите текст для обращения с темой"
+
+#: utils/message_builders/employee_message_builder.py:150
+msgid "Dear Employees"
+msgstr "Уважаемые сотрудники"
+
+#: utils/message_builders/employee_message_builder.py:152
+msgid ""
+"Please be advised that information regarding your hourly rate is "
+"confidential and is not provided through our corporate Telegram bot."
+msgstr ""
+"Обращаем ваше внимание, что информация о вашей почасовой ставке является "
+"конфиденциальной и не предоставляется в рамках нашего корпоративного Telegram-бота."
+
+#: utils/message_builders/employee_message_builder.py:154
+msgid ""
+"To obtain details about your hourly rate, you may contact the Labor and "
+"Payroll Department. The department specialists are ready to answer your "
+"questions and provide the necessary information in accordance with "
+"existing corporate procedures."
+msgstr ""
+"Для получения сведений о своей почасовой ставке вы можете обратиться в отдел труда и "
+"заработной платы. Специалисты отдела готовы ответить на ваши вопросы и предоставить "
+"необходимую информацию в рамках действующих корпоративных процедур."
+
+#: utils/message_builders/employee_message_builder.py:156
+msgid "Thank you for your understanding and for maintaining confidentiality."
+msgstr "Благодарим за понимание и соблюдение конфиденциальности."
 
 #~ msgid "I will keep it below this message"
 #~ msgstr "Я сохраню его под этим сообщением"
