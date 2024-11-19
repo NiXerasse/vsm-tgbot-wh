@@ -27,6 +27,9 @@ services:
       DB_HOST: db
     depends_on:
       - db
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     command: >
       ./docker-init-scripts/wait-for-db.sh db "alembic upgrade head && python main.py"
