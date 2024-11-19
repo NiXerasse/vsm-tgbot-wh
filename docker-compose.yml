@@ -2,13 +2,12 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      DB_RESTORE_FROM_FILE: backup.sql
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./.db-restore:/docker-entrypoint-initdb.d
     ports:
-      - "5432:15432"
+      - "15432:5432"
     restart: unless-stopped
 
   bot:
