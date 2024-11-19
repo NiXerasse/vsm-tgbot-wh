@@ -1,7 +1,12 @@
 services:
   db:
     image: postgres:15
+    env_file:
+      - .env
     environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
       DB_RESTORE_FROM_FILE: backup.sql
     volumes:
       - postgres_data:/var/lib/postgresql/data
