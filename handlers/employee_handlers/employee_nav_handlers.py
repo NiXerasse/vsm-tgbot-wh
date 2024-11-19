@@ -15,8 +15,8 @@ from utils.message_manager import MessageManager
 class EmployeeNavHandlers(EmployeeBaseHandlers):
     @staticmethod
     @EmployeeBaseHandlers.router.message(StateFilter(Authorised), CommandStart())
-    async def cmd_start(message: Message, state: FSMContext, session, _, tab_no):
-        await EmployeeNavHandlers.go_to_main_menu(message, state, session, _, tab_no)
+    async def cmd_start(message: Message, state: FSMContext, session, _, tab_no, start_msg_id=None):
+        await EmployeeNavHandlers.go_to_main_menu(message, state, session, _, tab_no, start_msg_id)
 
     @staticmethod
     async def go_to_main_menu(
