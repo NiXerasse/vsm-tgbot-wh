@@ -4,4 +4,4 @@
 __pycache__/
 vsmtgbot.json
 vsmtgbot_prod.json
-app.log
+.garbage
