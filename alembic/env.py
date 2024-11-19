@@ -1,15 +1,16 @@
 from logging.config import fileConfig
-import os
 
 from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
 
+from config.env import db_url
 from database.models import Base
 
-load_dotenv(find_dotenv())
 
 config = context.config
 
@@ -17,7 +18,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
-DB_URL = os.getenv('DB_URL').replace('%', '%%').replace('+asyncpg', '')
+DB_URL = db_url.replace('+asyncpg', '').replace('%', '%%')
 config.set_main_option('sqlalchemy.url', DB_URL)
 
 

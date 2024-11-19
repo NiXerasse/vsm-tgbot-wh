@@ -50,17 +50,26 @@ class Subdivision(Base):
     __tablename__ = 'subdivision'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    gsheets_id: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     time_records: Mapped[list["TimeRecord"]] = relationship('TimeRecord', back_populates='subdivision')
+    gsheets: Mapped["SubdivisionGSheet"] = relationship(
+        'SubdivisionGSheet', back_populates='subdivision', uselist=False)
+
+class SubdivisionGSheet(Base):
+    __tablename__ = 'subdivision_gsheet'
+
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), primary_key=True)
+    gsheets_id: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision', back_populates='gsheets')
 
 
 class TimeRecord(Base):
     __tablename__ = 'time_record'
 
     employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
-    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id'), nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), nullable=False)
     work_date: Mapped[Date] = mapped_column(Date, nullable=False)
     hours_worked: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -72,3 +81,68 @@ class TimeRecord(Base):
 
     employee: Mapped["Employee"] = relationship('Employee', back_populates='time_records')
     subdivision: Mapped["Subdivision"] = relationship('Subdivision', back_populates='time_records')
+
+
+class Inquiry(Base):
+    __tablename__ = 'inquiry'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), nullable=False)
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), nullable=False)
+    subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default='open')
+
+    messages: Mapped[list["Message"]] = relationship('Message', back_populates='inquiry', cascade='all, delete')
+    employee: Mapped["Employee"] = relationship('Employee')
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision')
+
+    __table_args__ = (
+        Index('idx_inquiry_employee_id', 'employee_id'),
+    )
+
+
+class Message(Base):
+    __tablename__ = 'message'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), nullable=False)
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'),
+                                             nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    sent_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+
+    inquiry: Mapped["Inquiry"] = relationship('Inquiry', back_populates='messages')
+    employee: Mapped["Employee"] = relationship('Employee')
+
+    __table_args__ = (
+        Index('idx_message_inquiry_id', 'inquiry_id'),
+    )
+
+class SubdivisionMessageThread(Base):
+    __tablename__ = 'subdivision_message_thread'
+
+    subdivision_id: Mapped[int] = mapped_column(ForeignKey('subdivision.id', ondelete='CASCADE'), primary_key=True, nullable=False)
+    message_thread_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
+
+    subdivision: Mapped["Subdivision"] = relationship('Subdivision')
+
+    __table_args__ = (
+        UniqueConstraint('subdivision_id', 'message_thread_id', name='uq_subdivision_message_thread'),
+    )
+
+class InquiryMessageMapping(Base):
+    __tablename__ = 'inquiry_message_mapping'
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey('inquiry.id', ondelete="CASCADE"), primary_key=True)
+    message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    message_thread_id: Mapped[int] = mapped_column(ForeignKey('subdivision_message_thread.message_thread_id'), nullable=False)
+
+class EmployeeAdmin(Base):
+    __tablename__ = 'employee_admin'
+
+    employee_id: Mapped[int] = mapped_column(ForeignKey('employee.id'), primary_key=True)
+
+    employee: Mapped["Employee"] = relationship('Employee')
+
+    __table_args__ = (
+        UniqueConstraint('employee_id', name='uq_employee_admin'),
+    )

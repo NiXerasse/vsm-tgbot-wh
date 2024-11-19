@@ -1,3 +1,4 @@
+pip~=24.3.1
 python-dotenv~=1.0.1
 aiogram~=3.13.1
 SQLAlchemy~=2.0.36
@@ -9,3 +10,5 @@ python-dateutil~=2.9.0.post0
 asyncpg~=0.29.0
 psycopg2-binary~=2.9.10
 colorlog~=6.8.2
+lxml~=5.3.0
+cairosvg~=2.7.1

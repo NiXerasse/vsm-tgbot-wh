@@ -18,7 +18,7 @@ logging.basicConfig(
     level=logging.INFO,  # Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.handlers.RotatingFileHandler('app.log'),
+        # logging.handlers.RotatingFileHandler('app.log'),
         color_log_handler
     ]
 )
