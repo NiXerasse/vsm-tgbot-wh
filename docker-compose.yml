@@ -11,6 +11,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./.db-restore:/docker-entrypoint-initdb.d
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     ports:
       - "15432:5432"
     restart: unless-stopped
