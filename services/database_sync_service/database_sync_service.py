@@ -1,5 +1,10 @@
+from datetime import datetime
+from pprint import pprint
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.models import Employee, Subdivision, TimeRecord
+from debug_tools.logging import log_context, async_log_context
 from logger.logger import logger
 from repositories.employee_repository import EmployeeRepository
 from repositories.subdivision_repository import SubdivisionRepository
@@ -36,6 +41,31 @@ class DatabaseSyncService:
             emp.tab_no: emp for emp in await self.employee_repo.get_all_employees(session)
         }
 
+    @staticmethod
+    def _prepare_time_records(
+            session: AsyncSession,
+            employee: Employee, subdivision: Subdivision, date_worked_hours: dict, time_records: dict):
+
+        current_month = datetime.now().month
+        for work_date, hours_worked in date_worked_hours.items():
+            if work_date.month < current_month - 1:
+                logger.warning(f'Trying to add record on closed period: {employee.full_name} -> {work_date}')
+                continue
+
+            time_record = time_records.get((employee.id, subdivision.id, work_date.strftime('%x')), None)
+            if time_record is None:
+                time_record = TimeRecord(
+                    employee_id=employee.id,
+                    subdivision_id=subdivision.id,
+                    work_date=work_date,
+                    hours_worked=hours_worked
+                )
+                time_records[(employee.id, subdivision.id, work_date.strftime('%x'))] = time_record
+                session.add(time_record)
+            elif time_record.hours_worked != hours_worked:
+                time_record.hours_worked = hours_worked
+
+
     async def _process_employee(self, session, tab_no, record, employees, subdivision, time_records):
         full_name = record['ФИО']
         if tab_no in employees:
@@ -46,8 +76,7 @@ class DatabaseSyncService:
             employee = await self.employee_repo.add_employee(session, tab_no, full_name, commit=False)
             employees[employee.tab_no] = employee
 
-        records = await self.employee_repo.prepare_time_records(employee, subdivision, record['data_records'])
-        time_records.extend(records)
+        self._prepare_time_records(session, employees[tab_no], subdivision, record['data_records'], time_records)
 
     async def _process_subdivision(self, session, subdivision_name, subdivision_data, employees, time_records):
         logger.info(f'Updating {subdivision_name}: {len(subdivision_data['data'])} records')
@@ -63,15 +92,17 @@ class DatabaseSyncService:
 
     async def sync_db(self, data):
         async with self.session_maker() as session:
-            employees = {
-                emp.tab_no: emp for emp in await self.employee_repo.get_all_employees(session)
-            }
-
-            time_records = []
+            async with async_log_context('reading employees'):
+                employees = {
+                    emp.tab_no: emp for emp in await self.employee_repo.get_all_employees(session)
+                }
+            async with async_log_context('reading time records'):
+                time_records = {
+                    (tr.employee_id, tr.subdivision_id, tr.work_date.strftime('%x')): tr
+                    for tr in await self.employee_repo.get_all_time_records(session)
+                }
             for subdivision_name in data:
                 await self._process_subdivision(
                     session, subdivision_name, data[subdivision_name], employees, time_records)
-
-            await self.employee_repo.upsert_time_records(session, time_records)
 
             await session.commit()

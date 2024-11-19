@@ -209,7 +209,6 @@ class EmployeeRepository:
 
         return time_records
 
-
     @staticmethod
     async def get_employees_by_tab_no(session: AsyncSession, tab_no_list: list[str]):
         result = await session.execute(
@@ -242,3 +241,7 @@ class EmployeeRepository:
         employee.password = ''
         await session.commit()
         return employee
+
+    @staticmethod
+    async def get_all_time_records(session: AsyncSession):
+        return (await session.execute(select(TimeRecord))).scalars().all()
