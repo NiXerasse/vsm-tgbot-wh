@@ -24,6 +24,8 @@ class GoogleSheetsService:
         file_name = file['name']
         if file_name.startswith('.'):
             return False
+        if file_name.startswith('Copy'):
+            return False
         if not self.read_file_postfix and '.' in file_name:
             return False
         return file_name.endswith(self.read_file_postfix)
