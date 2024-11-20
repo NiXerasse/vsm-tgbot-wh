@@ -57,7 +57,7 @@ class DatabaseSyncService:
                 time_record = TimeRecord(
                     employee_id=employee.id,
                     subdivision_id=subdivision.id,
-                    work_date=work_date,
+                    work_date=work_date.date(),
                     hours_worked=hours_worked
                 )
                 time_records[(employee.id, subdivision.id, work_date.strftime('%x'))] = time_record
