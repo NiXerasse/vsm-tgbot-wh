@@ -77,8 +77,9 @@ class AdminGroupMessageService:
     @staticmethod
     async def delete_inquiry_from_admin_group(session: AsyncSession, inquiry_id, bot):
         inq_mess_map = await AdminGroupMessageService.adm_grp_msg_repo.get_inquiry_message_mapping(session, inquiry_id)
-        await AdminGroupMessageService._delete_message_from_admin_group(inq_mess_map.message_id, bot)
-        await AdminGroupMessageService.adm_grp_msg_repo.delete_inquiry_message_mapping(session, inq_mess_map)
+        if inq_mess_map is not None:
+            await AdminGroupMessageService._delete_message_from_admin_group(inq_mess_map.message_id, bot)
+            await AdminGroupMessageService.adm_grp_msg_repo.delete_inquiry_message_mapping(session, inq_mess_map)
 
     @staticmethod
     async def update_inquiry_admin_group_message(session: AsyncSession, inquiry_with_messages: Inquiry, _, bot):
