@@ -22,7 +22,7 @@ class AdminGroupServiceHandlers(AdminGroupBaseHandlers):
     async def registering_message_thread_id(message: Message, session):
         logger.warning('Registering thread')
 
-        register_message = await AdminGroupMessageBuilder.register_message()
+        register_message = AdminGroupMessageBuilder.register_message()
         subdivisions = await AdminGroupServiceHandlers.subdivision_service.get_subdivisions(session)
         keyboard = await AdminGroupServiceKeyboards.get_subdivision_thread_register_keyboard(
             subdivisions, message.message_thread_id)
