@@ -19,9 +19,9 @@ class AdminGroupMessageRepository:
     @staticmethod
     async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
         return (
-                AdminGroupMessageRepository.
+                await AdminGroupMessageRepository.
                     _get_message_thread_by_subdivision_id(session, subdivision_id) or
-                AdminGroupMessageRepository.
+                await AdminGroupMessageRepository.
                     _get_message_thread_by_subdivision_id(session, SubdivisionService.service_subdivision) or
                 0
         )
