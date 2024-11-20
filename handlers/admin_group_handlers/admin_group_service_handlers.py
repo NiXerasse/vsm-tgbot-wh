@@ -24,7 +24,7 @@ class AdminGroupServiceHandlers(AdminGroupBaseHandlers):
 
         register_message = AdminGroupMessageBuilder.register_message()
         subdivisions = await AdminGroupServiceHandlers.subdivision_service.get_subdivisions(session)
-        keyboard = await AdminGroupServiceKeyboards.get_subdivision_thread_register_keyboard(
+        keyboard = AdminGroupServiceKeyboards.get_subdivision_thread_register_keyboard(
             subdivisions, message.message_thread_id)
 
         await MessageManager.answer_message_and_delete(message, register_message, keyboard)
