@@ -4,16 +4,27 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import SubdivisionMessageThread, Subdivision, InquiryMessageMapping, Inquiry
+from services.subdivision_service.subdivision_service import SubdivisionService
 
 
 class AdminGroupMessageRepository:
     @staticmethod
-    async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
+    async def _get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
         result = await session.execute(
             select(SubdivisionMessageThread.message_thread_id)
             .where(SubdivisionMessageThread.subdivision_id == subdivision_id)
         )
-        return result.scalar_one_or_none() or 0
+        return result.scalar_one_or_none()
+
+    @staticmethod
+    async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
+        return (
+                AdminGroupMessageRepository.
+                    _get_message_thread_by_subdivision_id(session, subdivision_id) or
+                AdminGroupMessageRepository.
+                    _get_message_thread_by_subdivision_id(session, SubdivisionService.service_subdivision) or
+                0
+        )
 
     @staticmethod
     async def get_service_subdivision_id(session: AsyncSession, name: str):

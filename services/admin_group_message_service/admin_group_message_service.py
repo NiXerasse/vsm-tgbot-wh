@@ -8,6 +8,7 @@ from keyboards.admin_group_inquiry_keyboards import AdminGroupInquiryKeyboards
 from locales.locales import gettext
 from repositories.admin_group_message_repository import AdminGroupMessageRepository
 from repositories.inquiry_repository import InquiryRepository
+from services.subdivision_service.subdivision_service import SubdivisionService
 from utils.message_builders.employee_message_builder import EmployeeMessageBuilder
 
 from logger.logger import logger
@@ -25,7 +26,7 @@ class AdminGroupMessageService:
     @staticmethod
     async def move_inquiry_to_archive(session: AsyncSession, inquiry_id, bot):
         service_subdivision_id = await AdminGroupMessageService.adm_grp_msg_repo.get_service_subdivision_id(
-            session, '.archive')
+            session, SubdivisionService.archive_subdivision)
         message_thread_id = await AdminGroupMessageService.adm_grp_msg_repo.get_message_thread_by_subdivision_id(
             session, service_subdivision_id)
         await AdminGroupMessageService._move_inquiry_to_thread(session, inquiry_id, message_thread_id, bot)
