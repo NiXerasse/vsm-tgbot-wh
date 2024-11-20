@@ -73,7 +73,7 @@ class DatabaseSyncService:
             if employee.full_name != full_name:
                 employee.full_name = full_name
         else:
-            employee = await self.employee_repo.add_employee(session, tab_no, full_name, commit=False)
+            employee = await self.employee_repo.add_employee(session, tab_no, full_name)
             employees[employee.tab_no] = employee
 
         self._prepare_time_records(session, employees[tab_no], subdivision, record['data_records'], time_records)

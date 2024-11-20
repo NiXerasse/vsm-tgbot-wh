@@ -149,11 +149,10 @@ class EmployeeRepository:
         return employee
 
     @staticmethod
-    async def add_employee(session: AsyncSession, tab_no: str, full_name: str, commit=True):
+    async def add_employee(session: AsyncSession, tab_no: str, full_name: str):
         employee = Employee(tab_no=tab_no, full_name=full_name, pin=EmployeeRepository.generate_pass())
         session.add(employee)
-        if commit:
-            await session.commit()
+        await session.commit()
         await session.flush()
         return employee
 
