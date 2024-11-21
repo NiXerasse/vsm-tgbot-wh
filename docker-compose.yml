@@ -14,7 +14,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     ports:
-      - "15432:5432"
+      - "${EX_DB_PORT}:${DB_PORT}"
     restart: unless-stopped
 
   bot:
@@ -30,6 +30,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - ${CERTS_PATH_HOST}:${CERTS_PATH}:ro
+    ports:
+      - "${WEBHOOK_PORT}:443"
     restart: unless-stopped
     command: >
       ./docker-init-scripts/wait-for-db.sh db "alembic upgrade head && python main.py"
