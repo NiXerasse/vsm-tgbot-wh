@@ -32,7 +32,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ${CERTS_PATH_HOST}:${CERTS_PATH}:ro
     ports:
-      - "${WEBHOOK_PORT}:443"
+      - "${WEBHOOK_PORT}:${WEBHOOK_PORT}"
     restart: unless-stopped
     command: >
       ./docker-init-scripts/wait-for-db.sh db "alembic upgrade head && python main.py"
