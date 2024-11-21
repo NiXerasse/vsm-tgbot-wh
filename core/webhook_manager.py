@@ -5,6 +5,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from aiohttp import web
 
 from config.env import certs_path, bot_token, webhook_port, webhook_host, webhook_path
+from logger.logger import logger
 
 
 class WebhookManager:
@@ -14,6 +15,10 @@ class WebhookManager:
         self.runner = None
 
     async def start_webhook(self):
+        webhook_url = f"{webhook_host}:{webhook_port}{webhook_path}"
+        await self.bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+        logger.warning(f"Webhook set to {webhook_url}")
+
         ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_context.load_cert_chain(
             certfile=os.path.join(certs_path, "fullchain.pem"),
@@ -31,5 +36,6 @@ class WebhookManager:
         await site.start()
 
     async def stop_webhook(self):
+        await self.bot.delete_webhook()
         if self.runner:
             await self.runner.cleanup()
