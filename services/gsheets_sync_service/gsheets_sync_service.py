@@ -33,7 +33,7 @@ class GsheetsSyncService:
 
             gsheets_pass = '*CHANGED*' if employee.password else employee.pin
             if row[pass_col] != gsheets_pass:
-                logger.info(f'Pin for {employee.full_name} {employee.tab_no} is to be updated for {employee.pin}')
+                logger.info(f'Pin for {employee.full_name} {employee.tab_no} is to be updated for {gsheets_pass}')
                 cells_to_update.append(Cell(row=row_no, col=pass_col + 1, value=gsheets_pass))
 
         return cells_to_update

@@ -15,6 +15,8 @@ from services.subdivision_service.subdivision_service import SubdivisionService
 class DatabaseSyncService:
 
     def __init__(self, session_maker):
+        self.employee_cache = None
+        self.time_record_cache = None
         self.session_maker = session_maker
         self.subdivision_repo = SubdivisionRepository()
         self.employee_repo = EmployeeRepository()
@@ -35,11 +37,6 @@ class DatabaseSyncService:
         await session.commit()
 
         await self._delete_old_admins(session, tab_nos)
-
-    async def _load_employee_cache(self, session: AsyncSession):
-        return {
-            emp.tab_no: emp for emp in await self.employee_repo.get_all_employees(session)
-        }
 
     @staticmethod
     def _prepare_time_records(
@@ -64,6 +61,7 @@ class DatabaseSyncService:
                 session.add(time_record)
             elif time_record.hours_worked != hours_worked:
                 time_record.hours_worked = hours_worked
+                session.add(time_record)
 
 
     async def _process_employee(self, session, tab_no, record, employees, subdivision, time_records):
@@ -72,6 +70,7 @@ class DatabaseSyncService:
             employee = employees[tab_no]
             if employee.full_name != full_name:
                 employee.full_name = full_name
+            session.add(employee)
         else:
             employee = await self.employee_repo.add_employee(session, tab_no, full_name)
             employees[employee.tab_no] = employee
@@ -90,17 +89,23 @@ class DatabaseSyncService:
             tab_nos = list(subdivision_data['data'].keys())
             await self._sync_admins(session, tab_nos)
 
-    async def sync_db(self, data):
-        async with self.session_maker() as session:
-            async with async_log_context('reading employees'):
-                employees = {
+    async def _read_cache(self, session):
+        if self.employee_cache is None:
+            self.employee_cache = {
                     emp.tab_no: emp for emp in await self.employee_repo.get_all_employees(session)
                 }
-            async with async_log_context('reading time records'):
-                time_records = {
+        if self.time_record_cache is None:
+            self.time_record_cache = {
                     (tr.employee_id, tr.subdivision_id, tr.work_date.strftime('%x')): tr
                     for tr in await self.employee_repo.get_all_time_records(session)
                 }
+        return self.employee_cache, self.time_record_cache
+
+    async def sync_db(self, data):
+        async with self.session_maker() as session:
+            async with async_log_context('reading employees and time records data'):
+                employees, time_records = await self._read_cache(session)
+
             for subdivision_name in data:
                 await self._process_subdivision(
                     session, subdivision_name, data[subdivision_name], employees, time_records)
