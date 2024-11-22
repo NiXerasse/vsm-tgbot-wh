@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from pprint import pprint
 
@@ -84,6 +85,7 @@ class DatabaseSyncService:
 
         for tab_no, record in subdivision_data['data'].items():
             await self._process_employee(session, tab_no, record, employees, subdivision, time_records)
+            await asyncio.sleep(0) # Increase responsiveness
 
         if subdivision_name == SubdivisionService.admin_subdivision:
             tab_nos = list(subdivision_data['data'].keys())
