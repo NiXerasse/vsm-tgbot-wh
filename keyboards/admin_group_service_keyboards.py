@@ -15,7 +15,7 @@ class AdminGroupServiceKeyboards:
                 callback_data=RegisterThreadCallback(
                     group_command_postfix=group_command_postfix,
                     subdivision_id=subdivision.id,
-                    message_thread_id=message_thread_id
+                    message_thread_id=message_thread_id or 0
                 ).pack())
             )
         return keyboard.adjust(1).as_markup()
