@@ -18,11 +18,16 @@ class AdminGroupMessageRepository:
 
     @staticmethod
     async def get_message_thread_by_subdivision_id(session: AsyncSession, subdivision_id: int) -> int | None:
+        result = await AdminGroupMessageRepository._get_message_thread_by_subdivision_id(session, subdivision_id)
+        if result is not None:
+            return result
+
+        service_subdivision_id = await AdminGroupMessageRepository.get_service_subdivision_id(
+            session, SubdivisionService.service_subdivision)
+
         return (
                 await AdminGroupMessageRepository.
-                    _get_message_thread_by_subdivision_id(session, subdivision_id) or
-                await AdminGroupMessageRepository.
-                    _get_message_thread_by_subdivision_id(session, SubdivisionService.service_subdivision) or
+                    _get_message_thread_by_subdivision_id(session, service_subdivision_id) or
                 0
         )
 
