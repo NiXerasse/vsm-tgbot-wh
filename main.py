@@ -1,9 +1,11 @@
 import asyncio
+import tracemalloc
 
 from core.bot_app import BotApplication
 
 
 async def main():
+    tracemalloc.start()
     app = BotApplication()
     await app.run()
 

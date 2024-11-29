@@ -12,3 +12,4 @@ psycopg2-binary~=2.9.10
 colorlog~=6.8.2
 lxml~=5.3.0
 cairosvg~=2.7.1
+objgraph~=3.6.2
