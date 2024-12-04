@@ -77,5 +77,10 @@ class EmployeeWhInfoHandler(EmployeeBaseHandlers):
     async def _show_detailed_wh_info(callback_query, session, locale, tab_no, month, year, _):
         png_image = await EmployeeBaseHandlers.employee_service.get_wh_detailed_info_img(
             session, tab_no, locale, month, year)
-        await MessageManager.update_message(
-            callback_query.message, '', CommonKeyboards.get_back_button_keyboard(_), new_photo=png_image)
+        if png_image is not None:
+            await MessageManager.update_message(
+                callback_query.message, '', CommonKeyboards.get_back_button_keyboard(_), new_photo=png_image)
+        else:
+            await MessageManager.update_message(
+                callback_query.message, EmployeeMessageBuilder.no_time_records_message(_),
+                CommonKeyboards.get_back_button_keyboard(_))

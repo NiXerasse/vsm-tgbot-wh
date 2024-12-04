@@ -26,6 +26,8 @@ class EmployeeService(BaseEmployeeDataService):
     @staticmethod
     async def get_wh_detailed_info_img(session: AsyncSession, tab_no: str, locale: str, month: int, year: int):
         wh_info = await EmployeeService.get_worked_hours_by_employee_tab_no(session, tab_no, month, year)
+        if not wh_info:
+            return None
         subdivision_name, wh_data = next(iter(wh_info.items()))
         # It needs to be thought about representation of employee worked at different subdivisions during month
 
