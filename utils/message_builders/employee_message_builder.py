@@ -160,4 +160,4 @@ class EmployeeMessageBuilder:
     def no_time_records_message(_):
         return Text(
             _('Unfortunately, there is no data about your worked hours for this period yet.')
-        )
+        ).as_markdown()
