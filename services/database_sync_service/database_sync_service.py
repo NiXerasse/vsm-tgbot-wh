@@ -1,11 +1,10 @@
 import asyncio
 from datetime import datetime
-from pprint import pprint
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Employee, Subdivision, TimeRecord
-from debug_tools.logging import log_context, async_log_context
+from debug_tools.logging import async_log_context
 from logger.logger import logger
 from repositories.employee_repository import EmployeeRepository
 from repositories.subdivision_repository import SubdivisionRepository
@@ -31,13 +30,17 @@ class DatabaseSyncService:
                 await session.delete(admin)
         await session.commit()
 
-    async def _sync_admins(self, session: AsyncSession, tab_nos: [str]):
-        employees = await self.employee_repo.get_employees_by_tab_no(session, tab_nos)
-        for employee in employees:
-            await self.employee_repo.upsert_employee_admin(session, employee)
-        await session.commit()
+    async def _sync_admins(self, session: AsyncSession, subdivision_data: dict, employees):
+        for tab_no, record in subdivision_data.items():
+            employee = await self.employee_repo.get_employee_by_tab_no(session, tab_no)
+            if employee is None:
+                employee = await self.employee_repo.add_employee(session, tab_no, record['ФИО'])
+                employees[tab_no] = employee
+                await session.flush()
 
-        await self._delete_old_admins(session, tab_nos)
+            await self.employee_repo.upsert_employee_admin(session, employee)
+
+        await self._delete_old_admins(session, list(subdivision_data.keys()))
 
     @staticmethod
     def _prepare_time_records(
@@ -83,13 +86,14 @@ class DatabaseSyncService:
         subdivision = await self.subdivision_repo.upsert_subdivision_and_gsheet(
             session, subdivision_name, subdivision_data['gsheets_id'])
 
+        if subdivision_name == SubdivisionService.admin_subdivision:
+            await self._sync_admins(session, subdivision_data['data'], employees)
+            return
+
         for tab_no, record in subdivision_data['data'].items():
             await self._process_employee(session, tab_no, record, employees, subdivision, time_records)
             await asyncio.sleep(0) # Increase responsiveness
 
-        if subdivision_name == SubdivisionService.admin_subdivision:
-            tab_nos = list(subdivision_data['data'].keys())
-            await self._sync_admins(session, tab_nos)
 
     async def _read_cache(self, session):
         if self.employee_cache is None:
