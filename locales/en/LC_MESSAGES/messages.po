@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-11-19 11:55+0300\n"
+"POT-Creation-Date: 2024-12-04 14:24+0300\n"
 "PO-Revision-Date: 2024-10-16 17:51+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -341,6 +341,12 @@ msgstr ""
 
 #: utils/message_builders/employee_message_builder.py:156
 msgid "Thank you for your understanding and for maintaining confidentiality."
+msgstr ""
+
+#: utils/message_builders/employee_message_builder.py:162
+msgid ""
+"Unfortunately, there is no data about your worked hours for this period "
+"yet."
 msgstr ""
 
 #~ msgid ""
