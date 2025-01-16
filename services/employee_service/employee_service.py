@@ -31,12 +31,10 @@ class EmployeeService(BaseEmployeeDataService):
         subdivision_name, wh_data = next(iter(wh_info.items()))
         # It needs to be thought about representation of employee worked at different subdivisions during month
 
-        return WorkedHoursCardCreator(locale).generate_png_card(
+        return WorkedHoursCardCreator(month, year, locale).generate_png_card(
             subdivision=f'ОП "{subdivision_name}"',
             tab_no=tab_no,
             full_name=wh_data['employee_full_name'],
-            month=month,
-            year=year,
             hours_worked=wh_data['hours_worked'],
         )
 
