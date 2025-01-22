@@ -14,6 +14,15 @@ class EmployeeMessageBuilder:
         ).as_markdown()
 
     @staticmethod
+    def wh_main_info_message(employee: Employee, _):
+        return Text(
+            '🚹 ', Bold(employee.full_name), '\n',
+            '🚹 ', Bold(employee.tab_no), '\n',
+            '\n',
+            '🚹 ', Bold(_('Please select the desired period')), ' ⤵️', '\n',
+        ).as_markdown()
+
+    @staticmethod
     def wh_info_message(employee: Employee, target_month_str: str, target_year: int, _):
         return Text(
             '🚹 ', Bold(employee.full_name), '\n',

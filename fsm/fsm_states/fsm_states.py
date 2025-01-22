@@ -27,6 +27,7 @@ class Authorised(StatesGroup):
     entered_inquiry_head = State()
     entering_inquiry_body = State()
     entered_inquiry_body = State()
+    wh_info_choose_period = State()
     wh_info = State()
     wh_detailed_info = State()
     rate_info = State()

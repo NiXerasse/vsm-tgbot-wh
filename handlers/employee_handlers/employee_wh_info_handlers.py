@@ -14,26 +14,59 @@ from keyboards.common_keyboards import CommonKeyboards
 from keyboards.employee_keyboards import EmployeeKeyboards
 from utils.message_builders.employee_message_builder import EmployeeMessageBuilder
 from utils.message_manager import MessageManager
+from utils.util_data_types import MonthPeriod
 
 
 class EmployeeWhInfoHandler(EmployeeBaseHandlers):
+
     @staticmethod
     @EmployeeBaseHandlers.router.callback_query(StateFilter(Authorised.start_menu), (F.data == 'get_wh_info'))
-    async def get_wh_info(callback_query: CallbackQuery, state: FSMContext, session, locale, _, tab_no):
+    async def choose_wh_info_period(callback_query: CallbackQuery, state: FSMContext, session, locale, _, tab_no):
         employee = await EmployeeBaseHandlers.employee_service.get_employee_by_tab_no(session, tab_no)
 
-        target_period_start, target_period_end, target_month_str, target_month, target_year = (
-            EmployeeWhInfoHandler._get_target_period(locale))
+        now = datetime.now()
+        current_month, current_year = now.month, now.year
+        prev = now - relativedelta(months=1)
+        prev_month, prev_year = prev.month, prev.year
+
+        periods = [
+            MonthPeriod(
+                get_month_names(context='stand-alone', locale=locale)[prev_month], prev_month, prev_year
+            ),
+            MonthPeriod(
+                get_month_names(context='stand-alone', locale=locale)[current_month], current_month, current_year
+            ),
+        ]
+
+        await MessageManager.update_message(
+            callback_query.message,
+            EmployeeMessageBuilder.wh_main_info_message(employee, _),
+            EmployeeKeyboards.get_wh_main_info_keyboard(periods, _)
+        )
+
+        await state.set_state(Authorised.wh_info_choose_period)
+
+    @staticmethod
+    @EmployeeBaseHandlers.router.callback_query(
+        StateFilter(Authorised.wh_info_choose_period), DetailedWhInfoCallback.filter())
+    async def wh_info(
+            callback_query: CallbackQuery, callback_data: DetailedWhInfoCallback,
+            state: FSMContext, session, _, tab_no):
+
+        employee = await EmployeeBaseHandlers.employee_service.get_employee_by_tab_no(session, tab_no)
+
+        target_period_start, target_period_end = EmployeeWhInfoHandler._get_target_period(
+            callback_data.month, callback_data.year)
 
         wh_stats = await (EmployeeBaseHandlers
                           .employee_service.get_wh_statistics(session, tab_no, target_period_start, target_period_end))
 
         wh_info_message = EmployeeWhInfoHandler._generate_wh_info_message(
-            employee, target_month_str, target_year, wh_stats, _)
+            employee, callback_data.month_str, callback_data.year, wh_stats, _)
 
         await MessageManager.update_message(
             callback_query.message, wh_info_message,
-            EmployeeKeyboards.get_wh_info_keyboard(target_month, target_year, _)
+            EmployeeKeyboards.get_wh_info_keyboard(MonthPeriod(**vars(callback_data)), _)
         )
 
         await state.set_state(Authorised.wh_info)
@@ -47,13 +80,10 @@ class EmployeeWhInfoHandler(EmployeeBaseHandlers):
         await state.set_state(Authorised.rate_info)
 
     @staticmethod
-    def _get_target_period(locale: str):
-        target_date = (datetime.now() - relativedelta(months=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        target_period_start = target_date.replace(day=1)
+    def _get_target_period(month: int, year: int):
+        target_period_start = datetime(year, month, 1, 0, 0, 0)
         target_period_end = target_period_start + relativedelta(months=1)
-        target_month_str = get_month_names(context='stand-alone', locale=locale)[target_date.month]
-
-        return target_period_start, target_period_end, target_month_str,  target_date.month, target_date.year
+        return target_period_start, target_period_end
 
     @staticmethod
     def _generate_wh_info_message(employee, target_month_str: str, target_year: int, wh_stats, _) -> str:
@@ -67,8 +97,8 @@ class EmployeeWhInfoHandler(EmployeeBaseHandlers):
             callback_query: CallbackQuery, callback_data: DetailedWhInfoCallback,
             state: FSMContext, session, _, tab_no, locale):
 
-        month, year = callback_data.month, callback_data.year
-        await EmployeeWhInfoHandler._show_detailed_wh_info(callback_query, session, locale, tab_no, month, year, _)
+        await EmployeeWhInfoHandler._show_detailed_wh_info(
+            callback_query, session, locale, tab_no, callback_data.month, callback_data.year, _)
 
         await callback_query.answer()
         await state.set_state(Authorised.wh_detailed_info)

@@ -1,7 +1,9 @@
+from datetime import datetime
 from aiogram.filters.callback_data import CallbackData
 
 
 class DetailedWhInfoCallback(CallbackData, prefix='detailed_wh_info'):
+    month_str: str
     month: int
     year: int
 

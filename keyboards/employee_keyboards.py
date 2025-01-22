@@ -1,8 +1,11 @@
+from dataclasses import asdict
+
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callback_data.employee_callback_data import DetailedWhInfoCallback, ShowInquiryIdCallback, \
     AddMessageInquiryCallback, DeleteInquiryIdCallback, DoDeleteInquiryIdCallback, RateInfoCallback
+from utils.util_data_types import MonthPeriod
 
 
 class EmployeeKeyboards:
@@ -18,10 +21,21 @@ class EmployeeKeyboards:
         return keyboard.adjust(1, 1).as_markup()
 
     @staticmethod
-    def get_wh_info_keyboard(month, year, _):
+    def get_wh_main_info_keyboard(periods: [MonthPeriod], _):
+        keyboard = InlineKeyboardBuilder()
+        for period in periods:
+            keyboard.add(InlineKeyboardButton(
+                text=f'{period.month_str.capitalize()}\'{period.year % 100}',
+                callback_data=DetailedWhInfoCallback(**asdict(period)).pack())
+            )
+        keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
+        return keyboard.adjust(len(periods), 1).as_markup()
+
+    @staticmethod
+    def get_wh_info_keyboard(period: MonthPeriod, _):
         keyboard = InlineKeyboardBuilder()
         keyboard.add(InlineKeyboardButton(
-            text=_('Detailed'), callback_data=DetailedWhInfoCallback(month=month, year=year).pack()))
+            text=_('Detailed'), callback_data=DetailedWhInfoCallback(**asdict(period)).pack()))
         keyboard.add(InlineKeyboardButton(text=_('The rate info'), callback_data=RateInfoCallback().pack()))
         keyboard.add(InlineKeyboardButton(text=_('Back'), callback_data='back_button'))
         return keyboard.adjust(1, 1, 1).as_markup()

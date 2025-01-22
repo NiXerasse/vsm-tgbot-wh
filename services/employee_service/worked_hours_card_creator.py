@@ -25,7 +25,7 @@ class WorkedHoursCardCreator:
     def __init__(self, month, year, locale='en'):
         if WorkedHoursCardCreator.tree_35 is None:
             logger.warning('Reading svg disk file')
-            WorkedHoursCardCreator.tree = etree.parse(svg_file_name)
+            WorkedHoursCardCreator.tree_35 = etree.parse(svg_file_name)
             WorkedHoursCardCreator.tree_42 = etree.parse(svg42_file_name)
 
         self.month = month
